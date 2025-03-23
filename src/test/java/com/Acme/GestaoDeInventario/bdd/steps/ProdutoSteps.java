@@ -22,6 +22,7 @@ public class ProdutoSteps {
 
     private Map<String, Object> produtoRequest;
     private Produto produto;
+    private Long produtoId;
 
     @Given("que o usuário deseja cadastrar um novo produto com os dados:")
     public void criarProdutoValido(io.cucumber.datatable.DataTable table){
@@ -41,6 +42,10 @@ public class ProdutoSteps {
             String url = BASE_URL + endpoint;
 
             response = restTemplate.postForEntity(url, produto, String.class);
+
+            if (response.getStatusCode() == HttpStatus.CREATED) {
+                produtoId = Long.parseLong(JsonPath.read(response.getBody(), "$.id").toString());
+            }
         }
         catch (HttpClientErrorException ex){
             response = new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
@@ -48,13 +53,12 @@ public class ProdutoSteps {
     }
 
     @And("o produto é criado com sucesso")
-    public void validarCriacaoProduto(String titulo ) {
+    public void validarCriacaoProduto() {
         assert response.getStatusCode() == HttpStatus.CREATED;
         assert response.getBody() != null;
         assert response.getBody().contains(produto.getNome());
-
-        int id = JsonPath.read(response.getBody(), "$.id");
-        assert id > 0;
+        assert produtoId != null : "Erro: O ID do produto não foi armazenado!";
+        assert produtoId > 0;
     }
 
     @Then("a resposta deve ter o status {int}")
@@ -68,19 +72,48 @@ public class ProdutoSteps {
         assert response.getBody().contains(mensagem);
     }
 
-//    @Then("recebo o produto correspondente")
-//    public void validarProdutoCorrespondente() {
-//        assert response.getStatusCode() == HttpStatus.OK;
-//        assert response.getBody() != null;
-//        assert response.getBody().contains("Produto Teste");
-//    }
-//
-//    @And("o corpo da resposta deve conter uma mensagem de erro")
-//    public void validarCorpoErro() {
-//        assert response.getBody() != null;
-//        assert response.getBody().contains("O produto deve ter  um nome") ||
-//                response.getBody().contains("O produto deve ter uma descrição") ||
-//                response.getBody().contains("A quantidade deve ser maior ou igual a zero") ||
-//                response.getBody().contains("O preço deve ser maior ou igual a zero");
-//    }
+    @Given("que o produto já foi cadastrado")
+    public void produtoExistente() {
+
+    }
+
+    @When("eu envio uma requisição GET para {string}")
+    public void enviarRequisicaoGet(String endpoint) {
+        try {
+            assert produtoId != null : "Erro: produtoId está nulo! O produto precisa ser criado antes de ser consultado.";
+            String url = BASE_URL + endpoint + "/" + produtoId;
+
+            response = restTemplate.getForEntity(url, String.class);
+        }
+        catch (HttpClientErrorException ex){
+            response = new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
+        }
+    }
+
+
+    @Then("recebo o produto correspondente")
+    public void validarProdutoCorrespondente() {
+        assert response.getStatusCode() == HttpStatus.OK;
+        assert response.getBody() != null;
+        assert response.getBody().contains(produto.getNome());
+    }
+
+    @When("eu envio uma requisição DELETE para {string}")
+    public void enviarRequisicaoDelete(String endpoint) {
+        try {
+            assert produtoId != null : "Erro: produtoId está nulo! O produto precisa ser criado antes de ser excluído.";
+            String url = BASE_URL + endpoint + "/" + produtoId;
+
+            restTemplate.delete(url);
+            response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+        catch (HttpClientErrorException ex){
+            response = new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
+        }
+    }
+
+    @When("eu coloco um codigo inexistente")
+    public void euColocoUmCodigoInexistente() {
+        produtoId = 999999L; // Um ID que provavelmente não existe
+    }
 }

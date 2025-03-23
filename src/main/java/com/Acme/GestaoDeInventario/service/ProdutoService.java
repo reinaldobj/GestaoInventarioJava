@@ -47,6 +47,16 @@ public class ProdutoService {
 
     }
 
+    // Método para buscar um produto por nome
+    public Produto buscarProdutoPorNome(String nome) {
+        var produto = produtoRepository.findByNome(nome).getFirst();
+
+        if(produto == null)
+            throw new ProdutoNaoEncontradoException("Produto não encontrado");
+
+        return produto;
+    }
+
     // Método para listar todos os produtos
     public List<Produto> listarTodos() {
         return produtoRepository.findAll();

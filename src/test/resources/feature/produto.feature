@@ -8,6 +8,28 @@ Feature: Gerenciamento de Produtos
     Then a resposta deve ter o status 201
     And o produto é criado com sucesso
 
+  Scenario: Buscar um produto existente
+    Given que o usuário deseja cadastrar um novo produto com os dados:
+      | nome          | descricao        | preco | quantidade |
+      | Teste Buscar  | Descrição Teste  | 99.99 | 10        |
+    When eu envio uma requisição POST para "/produtos"
+    Then a resposta deve ter o status 201
+
+    Given que o produto já foi cadastrado
+    When eu envio uma requisição GET para "/produtos/"
+    Then a resposta deve ter o status 200
+    And recebo o produto correspondente
+
+  Scenario: Deletar um produto existente
+    Given que o usuário deseja cadastrar um novo produto com os dados:
+      | nome             | descricao        | preco | quantidade |
+      | Teste  Cadastrar | Descrição Teste  | 99.99 | 10        |
+    When eu envio uma requisição POST para "/produtos"
+    Then a resposta deve ter o status 201
+
+    Given que o produto já foi cadastrado
+    When eu envio uma requisição DELETE para "/produtos"
+    Then a resposta deve ter o status 204
 
   Scenario: Criar um produto sem nome
     Given que o usuário deseja cadastrar um novo produto com os dados:
@@ -41,23 +63,14 @@ Feature: Gerenciamento de Produtos
     Then a resposta deve ter o status 400
     And recebo uma mensagem de erro "A quantidade deve ser maior ou igual a zero"
 
-  Scenario: Buscar um produto existente
-    Given que existe um produto cadastrado com ID 1
-    When eu envio uma requisição GET para "/produtos/1"
-    Then a resposta deve ter o status 200
-    And recebo o produto correspondente
-
   Scenario: Buscar um produto inexistente
-    When eu envio uma requisição GET para "/produtos/999"
+    When eu coloco um codigo inexistente
+    When eu envio uma requisição GET para "/produtos/"
     Then a resposta deve ter o status 404
     And recebo uma mensagem de erro "Produto não encontrado"
 
-  Scenario: Deletar um produto existente
-    Given que existe um produto cadastrado com ID 1
-    When eu envio uma requisição DELETE para "/produtos/1"
-    Then a resposta deve ter o status 204
-
   Scenario: Deletar um produto inexistente
-    When eu envio uma requisição DELETE para "/produtos/999"
+    When eu coloco um codigo inexistente
+    When eu envio uma requisição DELETE para "/produtos/"
     Then a resposta deve ter o status 404
     And recebo uma mensagem de erro "Produto não encontrado"
