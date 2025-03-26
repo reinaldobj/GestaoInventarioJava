@@ -4,10 +4,7 @@ import com.Acme.GestaoDeInventario.exception.PedidoInvalidoException;
 import com.Acme.GestaoDeInventario.exception.PedidoNaoEncontradoException;
 import com.Acme.GestaoDeInventario.exception.ProdutoNaoEncontradoException;
 import com.Acme.GestaoDeInventario.exception.ProdutoSemEstoqueException;
-import com.Acme.GestaoDeInventario.model.Pedido;
-import com.Acme.GestaoDeInventario.model.PedidoProduto;
-import com.Acme.GestaoDeInventario.model.Produto;
-import com.Acme.GestaoDeInventario.model.StatusPedido;
+import com.Acme.GestaoDeInventario.model.*;
 import com.Acme.GestaoDeInventario.repository.PedidoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,15 +16,23 @@ import java.util.List;
 public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final ProdutoService produtoService;
+    private final UsuarioService usuarioService;
 
     @Autowired
-    public PedidoService(PedidoRepository pedidoRepository, ProdutoService produtoService) {
+    public PedidoService(PedidoRepository pedidoRepository, ProdutoService produtoService, UsuarioService usuarioService) {
         this.pedidoRepository = pedidoRepository;
         this.produtoService = produtoService;
+        this.usuarioService = usuarioService;
     }
 
     public Pedido criarPedido(Pedido pedido) {
         List<PedidoProduto> itensAtualizados = new ArrayList<>();
+
+        if (pedido.getCliente() == null) {
+            throw new PedidoInvalidoException("O pedido deve ter um cliente");
+        }
+
+        usuarioService.buscarUsuarioPorId(pedido.getCliente().getId());
 
         if(pedido.getItens() == null)
             throw new PedidoInvalidoException("O pedido deve ter itens");

@@ -26,14 +26,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class PedidoControllerTest {
 
     private static final String URL_PEDIDOS = "/pedidos";
-    private static final String URL_USUARIOS = "/usuarios";
-    private static final String URL_PRODUTOS = "/produtos";
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private PedidoRepository pedidoRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private TestHelper testHelper;
@@ -48,10 +43,10 @@ public class PedidoControllerTest {
         Produto produto1 = testHelper.criarProduto("Cadeira", "Cadeira Teste", 100.00, 100);
         Produto produto2 = testHelper.criarProduto("Mesa", "Mesa Teste", 1000.00, 100);
 
-        Usuario usuario = testHelper.criarUsuario("Usuario Teste", "teste@teste.com");
-
         PedidoProduto itemPedido1 = testHelper.criarPedidoProduto(produto1.getId(), 2);
         PedidoProduto itemPedido2 = testHelper.criarPedidoProduto(produto2.getId(), 1);
+
+        Usuario usuario = testHelper.criarUsuario("Usuario Teste", "teste@teste.com");
 
         Pedido pedido = new Pedido();
         pedido.setCliente(usuario);
@@ -90,4 +85,41 @@ public class PedidoControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Produto não encontrado"));
     }
+
+    @Test
+    void deveRetornarExceptionAoCadastrarPedidoSemItens() throws Exception {
+        Usuario usuario = testHelper.criarUsuario("Cliente Teste", "cliente@teste.com");
+
+        Pedido pedido = new Pedido();
+        pedido.setCliente(usuario);
+
+        mockMvc.perform(post(URL_PEDIDOS)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(pedido)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("O pedido deve ter itens"));
+    }
+
+    @Test
+    void deveRetornarExceptionAoCadastrarPedidoComUsuarioQueNaoExiste() throws Exception {
+        Produto produto1 = testHelper.criarProduto("Cadeira", "Cadeira Teste", 100.00, 100);
+        Produto produto2 = testHelper.criarProduto("Mesa", "Mesa Teste", 1000.00, 100);
+
+        PedidoProduto itemPedido1 = testHelper.criarPedidoProduto(produto1.getId(), 2);
+        PedidoProduto itemPedido2 = testHelper.criarPedidoProduto(produto2.getId(), 1);
+
+        Usuario usuario = new Usuario();
+        usuario.setId(9999L);
+
+        Pedido pedido = new Pedido();
+        pedido.setCliente(usuario);
+        pedido.setItens(List.of(itemPedido1, itemPedido2));
+
+        mockMvc.perform(post(URL_PEDIDOS)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(pedido)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Usuário não encontrado"));
+    }
+
 }
