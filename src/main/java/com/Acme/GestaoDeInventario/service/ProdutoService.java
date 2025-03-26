@@ -22,7 +22,7 @@ public class ProdutoService {
     // Método para salvar um produto
     public Produto salvarProduto(@Valid Produto produto) {
         if(produto.getNome() == null || produto.getNome().isEmpty()){
-            throw new ProdutoInvalidoException("O produto deve ter  um nome");
+            throw new ProdutoInvalidoException("O produto deve ter um nome");
         }
 
         if(produto.getDescricao() == null || produto.getDescricao().isEmpty()){

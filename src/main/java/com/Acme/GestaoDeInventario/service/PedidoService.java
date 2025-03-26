@@ -1,5 +1,6 @@
 package com.Acme.GestaoDeInventario.service;
 
+import com.Acme.GestaoDeInventario.exception.PedidoInvalidoException;
 import com.Acme.GestaoDeInventario.exception.PedidoNaoEncontradoException;
 import com.Acme.GestaoDeInventario.exception.ProdutoNaoEncontradoException;
 import com.Acme.GestaoDeInventario.exception.ProdutoSemEstoqueException;
@@ -8,6 +9,7 @@ import com.Acme.GestaoDeInventario.model.PedidoProduto;
 import com.Acme.GestaoDeInventario.model.Produto;
 import com.Acme.GestaoDeInventario.model.StatusPedido;
 import com.Acme.GestaoDeInventario.repository.PedidoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ public class PedidoService {
     private final PedidoRepository pedidoRepository;
     private final ProdutoService produtoService;
 
+    @Autowired
     public PedidoService(PedidoRepository pedidoRepository, ProdutoService produtoService) {
         this.pedidoRepository = pedidoRepository;
         this.produtoService = produtoService;
@@ -25,6 +28,9 @@ public class PedidoService {
 
     public Pedido criarPedido(Pedido pedido) {
         List<PedidoProduto> itensAtualizados = new ArrayList<>();
+
+        if(pedido.getItens() == null)
+            throw new PedidoInvalidoException("O pedido deve ter itens");
 
         for (PedidoProduto item : pedido.getItens()) {
             Produto produto = produtoService.buscarProdutoPorId(item.getProduto().getId());
@@ -37,7 +43,7 @@ public class PedidoService {
                 throw new ProdutoSemEstoqueException("Quantidade do produto não disponível");
             }
 
-            produto.setQuantidade(produto.getQuantidade() - item.getProduto().getQuantidade());
+            produto.setQuantidade(produto.getQuantidade() - item.getQuantidade());
             produtoService.salvarProduto(produto);
 
             item = new PedidoProduto(pedido, produto, item.getQuantidade(), produto.getPreco());

@@ -1,7 +1,6 @@
 package com.Acme.GestaoDeInventario.config;
 
 import com.Acme.GestaoDeInventario.exception.*;
-import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,7 +8,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.validation.ConstraintViolationException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,6 +24,16 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(PedidoInvalidoException.class)
+    public ResponseEntity<ErrorResponse> handlePedidoInvalidoException(PedidoInvalidoException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),  // Timestamp do erro
+                ex.getMessage(),  // Mensagem da exceção
+                HttpStatus.NOT_FOUND.value()  // Código de status HTTP
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(ProdutoSemEstoqueException.class)

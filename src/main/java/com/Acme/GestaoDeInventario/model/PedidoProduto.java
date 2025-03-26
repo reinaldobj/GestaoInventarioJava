@@ -1,7 +1,6 @@
 package com.Acme.GestaoDeInventario.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -10,7 +9,7 @@ public class PedidoProduto {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long Id;
+    private long id;
 
     @ManyToOne
     @JoinColumn(name = "pedido_id", nullable = false)
@@ -52,8 +51,8 @@ public class PedidoProduto {
         this.precoUnitario = precoUnitario;
     }
 
-    public long getId() {
-        return Id;
+    public Long getId() {
+        return id;
     }
 
     public Pedido getPedido() {

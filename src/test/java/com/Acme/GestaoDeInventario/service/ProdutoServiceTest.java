@@ -8,11 +8,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -47,7 +44,6 @@ public class ProdutoServiceTest {
         long idInexistente = 99L;
         when(produtoRepository.findById(idInexistente)).thenReturn(Optional.empty());
 
-        // Act & Assert: Verificar se a exceção é lançada ao buscar um produto inexistente
         Exception exception = assertThrows(RuntimeException.class, () -> {
             produtoService.buscarProdutoPorId(idInexistente);
         });
