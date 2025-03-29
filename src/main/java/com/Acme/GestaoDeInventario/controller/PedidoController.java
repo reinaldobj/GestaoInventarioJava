@@ -12,7 +12,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("/pedidos")
 public class PedidoController {
     private final PedidoService pedidoService;

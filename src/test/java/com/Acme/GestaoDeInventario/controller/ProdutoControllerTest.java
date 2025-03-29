@@ -1,6 +1,7 @@
 package com.Acme.GestaoDeInventario.controller;
 
 import com.Acme.GestaoDeInventario.model.Produto;
+import com.Acme.GestaoDeInventario.utils.TestHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,10 +35,13 @@ public class ProdutoControllerTest {
     private String produtoJsonValido;
     private String produtoJsonSemNome;
 
-    @BeforeEach
+    private TestHelper testHelper;
+
+        @BeforeEach
     void setup() throws Exception {
-        produtoJsonValido = gerarProdutoJson(new Produto(PRODUTO_NOME, PRODUTO_DESCRICAO, 100.0, 10));
-        produtoJsonSemNome = gerarProdutoJson(new Produto(null, PRODUTO_DESCRICAO, 100.0, 10));
+        testHelper = new TestHelper(mockMvc, objectMapper);
+        produtoJsonValido = testHelper.gerarJson(new Produto(PRODUTO_NOME, PRODUTO_DESCRICAO, 100.0, 10));
+        produtoJsonSemNome = testHelper.gerarJson(new Produto(null, PRODUTO_DESCRICAO, 100.0, 10));
     }
 
     @Test
@@ -72,9 +76,5 @@ public class ProdutoControllerTest {
                         .content(produtoJsonSemNome))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("O produto deve ter um nome"));
-    }
-
-    private String gerarProdutoJson(Produto produto) throws Exception {
-        return objectMapper.writeValueAsString(produto);
     }
 }

@@ -36,11 +36,12 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(String nome, String email, String endereco, String telefone) {
+    public Usuario(String nome, String email, String endereco, String telefone, TipoUsuario tipoUsuario) {
         this.nome = nome;
         this.email = email;
         this.endereco = endereco;
         this.telefone = telefone;
+        this.tipoUsuario = tipoUsuario;
     }
 
     public Long getId() {

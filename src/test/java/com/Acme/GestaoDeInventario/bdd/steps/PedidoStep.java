@@ -24,7 +24,6 @@ public class PedidoStep {
     private final RestTemplate restTemplate = new RestTemplate();
     private final SharedSteps sharedSteps = new SharedSteps();
     private final String BASE_URL = "http://localhost:8080";
-    private TestHelper testHelper;
     private ResponseEntity<String> response;
 
     private Pedido pedido;
@@ -43,7 +42,6 @@ public class PedidoStep {
 
     @PostConstruct
     public void init() {
-        this.testHelper = new TestHelper(mockMvc, objectMapper);
     }
 
     @Given("que um cliente selecionou um ou mais produtos")
@@ -102,7 +100,7 @@ public class PedidoStep {
     public void calcularValorTotal() throws Exception {
         double valorTotal = Double.parseDouble(JsonPath.read(response.getBody(), "$.valorTotal").toString());
 
-        assert valorTotal == valorTotal;
+        assert valorTotal == this.valorTotal;
     }
 
     @Given("que um cliente tenta criar um pedido sem selecionar produtos")
@@ -191,8 +189,7 @@ public class PedidoStep {
     }
 
     private long criarUsuario(String nome, String email, String endereco, String telefone) throws Exception {
-        Usuario usuario = new Usuario(nome, email, endereco, telefone);
-        usuario.setTipoUsuario(TipoUsuario.CLIENTE);
+        Usuario usuario = new Usuario(nome, email, endereco, telefone, TipoUsuario.CLIENTE);
         sharedSteps.enviarRequisicaoPost("/usuarios", usuario);
         response = sharedSteps.getResponse();
 

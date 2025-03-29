@@ -56,4 +56,8 @@ public class TestHelper {
         itemPedido.setQuantidade(quantidade);
         return itemPedido;
     }
+
+    public String gerarJson(Object objeto) throws Exception {
+        return objectMapper.writeValueAsString(objeto);
+    }
 }

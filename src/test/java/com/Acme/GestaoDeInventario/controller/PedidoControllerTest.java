@@ -121,5 +121,4 @@ public class PedidoControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Usuário não encontrado"));
     }
-
 }
