@@ -9,7 +9,6 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -20,9 +19,14 @@ public class ProdutoSteps {
     private ResponseEntity<String> response;
     private final String BASE_URL = "http://localhost:8080";
 
-    private Map<String, Object> produtoRequest;
     private Produto produto;
     private Long produtoId;
+
+    private SharedSteps sharedSteps = new SharedSteps();
+
+    public ProdutoSteps(SharedSteps sharedSteps){
+        this.sharedSteps = sharedSteps;
+    }
 
     @Given("que o usuário deseja cadastrar um novo produto com os dados:")
     public void criarProdutoValido(io.cucumber.datatable.DataTable table){
@@ -38,17 +42,12 @@ public class ProdutoSteps {
 
     @When("eu envio uma requisição POST para {string}")
     public void enviarRequisicaoPost(String endpoint) {
-        try {
-            String url = BASE_URL + endpoint;
+        sharedSteps.enviarRequisicaoPost(endpoint, produto);
 
-            response = restTemplate.postForEntity(url, produto, String.class);
+        response = sharedSteps.getResponse();
 
-            if (response.getStatusCode() == HttpStatus.CREATED) {
-                produtoId = Long.parseLong(JsonPath.read(response.getBody(), "$.id").toString());
-            }
-        }
-        catch (HttpClientErrorException ex){
-            response = new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
+       if (response.getStatusCode() == HttpStatus.CREATED) {
+            produtoId = Long.parseLong(JsonPath.read(response.getBody(), "$.id").toString());
         }
     }
 
@@ -79,17 +78,10 @@ public class ProdutoSteps {
 
     @When("eu envio uma requisição GET para {string}")
     public void enviarRequisicaoGet(String endpoint) {
-        try {
-            assert produtoId != null : "Erro: produtoId está nulo! O produto precisa ser criado antes de ser consultado.";
-            String url = BASE_URL + endpoint + "/" + produtoId;
+        sharedSteps.enviarRequisicaoGet(endpoint, produtoId);
 
-            response = restTemplate.getForEntity(url, String.class);
-        }
-        catch (HttpClientErrorException ex){
-            response = new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
-        }
+        response = sharedSteps.getResponse();
     }
-
 
     @Then("recebo o produto correspondente")
     public void validarProdutoCorrespondente() {
@@ -100,16 +92,9 @@ public class ProdutoSteps {
 
     @When("eu envio uma requisição DELETE para {string}")
     public void enviarRequisicaoDelete(String endpoint) {
-        try {
             assert produtoId != null : "Erro: produtoId está nulo! O produto precisa ser criado antes de ser excluído.";
-            String url = BASE_URL + endpoint + "/" + produtoId;
-
-            restTemplate.delete(url);
+            sharedSteps.enviarRequisicaoDelete(endpoint, produtoId);
             response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        catch (HttpClientErrorException ex){
-            response = new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
-        }
     }
 
     @When("eu coloco um codigo inexistente")
