@@ -1,8 +1,6 @@
 package com.Acme.GestaoDeInventario.model;
 
 import jakarta.persistence.*;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.NumberFormat;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;

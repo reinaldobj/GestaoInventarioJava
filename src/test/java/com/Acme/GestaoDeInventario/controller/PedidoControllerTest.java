@@ -1,7 +1,6 @@
 package com.Acme.GestaoDeInventario.controller;
 
 import com.Acme.GestaoDeInventario.model.*;
-import com.Acme.GestaoDeInventario.repository.PedidoRepository;
 import com.Acme.GestaoDeInventario.utils.TestHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;

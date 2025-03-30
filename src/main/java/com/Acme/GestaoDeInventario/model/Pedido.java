@@ -68,10 +68,6 @@ public class Pedido {
         this.status = status;
     }
 
-    public void setValorTotal(double valorTotal) {
-        this.valorTotal = valorTotal;
-    }
-
     public double getValorTotal() {
         return valorTotal;
     }

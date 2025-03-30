@@ -3,34 +3,30 @@ Feature: Gerenciamento de Usuários
   Quero gerenciar meus dados (ou os dados de outros usuários, no caso de administradores),
   Para que eu possa realizar operações de cadastro, consulta, atualização e exclusão de usuários.
 
-  @CadastroUsuario
   Scenario: Cadastrar um novo usuário com sucesso
     Given que o usuário deseja se cadastrar com os seguintes dados:
       | nome           | email                | endereco         | telefone   | tipoUsuario |
       | João da Silva  | joao@exemplo.com     | Rua A, 123       | 999999999  | CLIENTE     |
     When eu envio uma requisição POST com o usuário para "/usuarios"
-    Then a resposta do usuário deve ter o status 200
+    Then o sistema deve retornar um status 201
     And a resposta deve conter um id válido
 
-  @CadastroUsuario
   Scenario: Tentar cadastrar um usuário sem nome
     Given que o usuário deseja se cadastrar com os seguintes dados:
       | nome  | email              | endereco         | telefone   | tipoUsuario |
       |       | maria@exemplo.com  | Rua B, 456       | 888888888  | CLIENTE     |
     When eu envio uma requisição POST com o usuário para "/usuarios"
-    Then a resposta do usuário deve ter o status 400
-    And recebo uma mensagem de erro "O usuário deve ter um nome." no retorno do usuário
+    Then o sistema deve retornar um status 400
+    And o sistema me retorna uma mensagem "O usuário deve ter um nome."
 
-  @CadastroUsuario
   Scenario: Tentar cadastrar um usuário sem email
     Given que o usuário deseja se cadastrar com os seguintes dados:
       | nome            | email | endereco         | telefone   | tipoUsuario |
       | Carlos Souza    |       | Rua C, 789       | 777777777  | CLIENTE     |
     When eu envio uma requisição POST com o usuário para "/usuarios"
-    Then a resposta do usuário deve ter o status 400
-    And recebo uma mensagem de erro "O usuário deve ter um email." no retorno do usuário
+    Then o sistema deve retornar um status 400
+    And o sistema me retorna uma mensagem "O usuário deve ter um email."
 
-  @ConsultaUsuario
   Scenario: Consultar os detalhes de um usuário existente
     Given que o usuário deseja se cadastrar com os seguintes dados:
       | nome           | email                | endereco         | telefone   | tipoUsuario |
@@ -40,7 +36,6 @@ Feature: Gerenciamento de Usuários
     Then o sistema deve retornar os detalhes do usuário
     And a resposta deve conter o nome "Ana Oliveira" e o email "ana@exemplo.com"
 
-  @AtualizacaoUsuario
   Scenario: Atualizar os dados de um usuário existente
     Given que o usuário deseja se cadastrar com os seguintes dados:
       | nome           | email                | endereco         | telefone   | tipoUsuario |
@@ -52,10 +47,10 @@ Feature: Gerenciamento de Usuários
     Then o sistema deve atualizar o usuário
     And a resposta deve conter o nome "Pedro L. Silva" e o email "pedro.silva@exemplo.com"
 
-  @ExclusaoUsuario
   Scenario: Excluir um usuário existente
     Given que o usuário deseja se cadastrar com os seguintes dados:
       | nome           | email                | endereco         | telefone   | tipoUsuario |
       | Maria Fernandes| maria@exemplo.com    | Rua F, 303       | 444444444  | CLIENTE     |
+    When eu envio uma requisição POST com o usuário para "/usuarios"
     When eu envio uma requisição DELETE com usuário para "/usuarios/"
-    Then a resposta do usuário deve ter o status 204
+    Then o sistema deve retornar um status 204

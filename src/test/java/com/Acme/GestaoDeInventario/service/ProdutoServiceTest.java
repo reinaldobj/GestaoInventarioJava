@@ -44,9 +44,7 @@ public class ProdutoServiceTest {
         long idInexistente = 99L;
         when(produtoRepository.findById(idInexistente)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            produtoService.buscarProdutoPorId(idInexistente);
-        });
+        Exception exception = assertThrows(RuntimeException.class, () -> produtoService.buscarProdutoPorId(idInexistente));
 
         assertEquals("Produto não encontrado", exception.getMessage());
 

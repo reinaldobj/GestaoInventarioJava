@@ -2,7 +2,6 @@ package com.Acme.GestaoDeInventario.controller;
 
 import com.Acme.GestaoDeInventario.model.Produto;
 import com.Acme.GestaoDeInventario.service.ProdutoService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

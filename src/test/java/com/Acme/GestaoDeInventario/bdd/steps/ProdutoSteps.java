@@ -2,28 +2,26 @@ package com.Acme.GestaoDeInventario.bdd.steps;
 
 import com.Acme.GestaoDeInventario.model.Produto;
 import com.jayway.jsonpath.JsonPath;
-import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
 
 public class ProdutoSteps {
-    private final RestTemplate restTemplate = new RestTemplate();
     private ResponseEntity<String> response;
-    private final String BASE_URL = "http://localhost:8080";
 
     private Produto produto;
     private Long produtoId;
 
-    private SharedSteps sharedSteps = new SharedSteps();
+    private final SharedSteps sharedSteps;
 
+    @Autowired
     public ProdutoSteps(SharedSteps sharedSteps){
         this.sharedSteps = sharedSteps;
     }
@@ -31,7 +29,7 @@ public class ProdutoSteps {
     @Given("que o usuário deseja cadastrar um novo produto com os dados:")
     public void criarProdutoValido(io.cucumber.datatable.DataTable table){
         List<Map<String, String>> data = table.asMaps();
-        Map<String, String> row = data.get(0); // Pega a primeira linha da tabela
+        Map<String, String> row = data.getFirst(); // Pega a primeira linha da tabela
 
         produto = new Produto();
         produto.setNome(row.get("nome"));
@@ -58,17 +56,6 @@ public class ProdutoSteps {
         assert response.getBody().contains(produto.getNome());
         assert produtoId != null : "Erro: O ID do produto não foi armazenado!";
         assert produtoId > 0;
-    }
-
-    @Then("a resposta deve ter o status {int}")
-    public void validarStatus(int status) {
-        assert response.getStatusCode().value() == status;
-    }
-
-    @And("recebo uma mensagem de erro {string}")
-    public void validarMensagemErro(String mensagem) {
-        assert response.getBody() != null;
-        assert response.getBody().contains(mensagem);
     }
 
     @Given("que o produto já foi cadastrado")

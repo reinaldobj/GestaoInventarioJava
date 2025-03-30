@@ -1,29 +1,20 @@
 package com.Acme.GestaoDeInventario.bdd.steps;
 
 import com.Acme.GestaoDeInventario.model.*;
-import com.Acme.GestaoDeInventario.utils.TestHelper;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
 public class PedidoStep {
-    private final RestTemplate restTemplate = new RestTemplate();
-    private final SharedSteps sharedSteps = new SharedSteps();
-    private final String BASE_URL = "http://localhost:8080";
+    private final SharedSteps sharedSteps;
     private ResponseEntity<String> response;
 
     private Pedido pedido;
@@ -32,22 +23,17 @@ public class PedidoStep {
     private String nomeCliente;
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    public PedidoStep() {
-    }
-
-    @PostConstruct
-    public void init() {
+    public PedidoStep(SharedSteps sharedSteps) {
+        this.sharedSteps = sharedSteps;
     }
 
     @Given("que um cliente selecionou um ou mais produtos")
     public void criarPedidoValido() throws Exception {
-        long idProduto1 = criarProduto("Cadeira Gamer", "Cadeira Gamer - Alta Performance", 150.0, 10);
-        long idProduto2 = criarProduto("Mesa Gamer", "Mesa Gamer - Design Moderno", 300.0, 5);
+        double valorProduto1 = 150.0;
+        double valorProduto2 = 300.0;
+
+        long idProduto1 = criarProduto("Cadeira Gamer", "Cadeira Gamer - Alta Performance", valorProduto1, 10);
+        long idProduto2 = criarProduto("Mesa Gamer", "Mesa Gamer - Design Moderno", valorProduto2, 5);
 
         nomeCliente = "Cliente Teste";
         long idCliente = criarUsuario(nomeCliente, "cliente@teste.com", "Rua Teste, 123", "123456789");
@@ -69,8 +55,8 @@ public class PedidoStep {
         itemPedido2.setProduto(produtoPedido2);
         itemPedido2.setQuantidade(1);
 
-        double valorTotalItem1 = itemPedido1.getProduto().getPreco() * itemPedido1.getQuantidade();
-        double valorTotalItem2 = itemPedido2.getProduto().getPreco() * itemPedido2.getQuantidade();
+        double valorTotalItem1 = valorProduto1 * itemPedido1.getQuantidade();
+        double valorTotalItem2 = valorProduto2 * itemPedido2.getQuantidade();
 
         valorTotal = valorTotalItem1 + valorTotalItem2;
 
@@ -90,14 +76,14 @@ public class PedidoStep {
     }
 
     @Then("o sistema deve registrar o pedido com status {string}")
-    public void validarStatus(String status) throws Exception {
+    public void validarStatus(String status) {
         String statusPedido = JsonPath.read(response.getBody(), "$.status").toString();
 
-        assert statusPedido.equals("PENDENTE");
+        assert statusPedido.equals(status);
     }
 
     @And("calcular o valor total do pedido")
-    public void calcularValorTotal() throws Exception {
+    public void calcularValorTotal() {
         double valorTotal = Double.parseDouble(JsonPath.read(response.getBody(), "$.valorTotal").toString());
 
         assert valorTotal == this.valorTotal;
@@ -112,13 +98,6 @@ public class PedidoStep {
 
         pedido = new Pedido();
         pedido.setCliente(clientePedido);
-    }
-
-    @Then("o sistema deve exibir uma mensagem de erro {string}")
-    public void validarMensagemErro(String mensagem) throws Exception {
-        String mensagemErro = JsonPath.read(response.getBody(), "$.message").toString();
-
-        assert mensagemErro.equals(mensagem);
     }
 
     @And("pelo menos um dos produtos não possui estoque suficiente")
@@ -141,42 +120,37 @@ public class PedidoStep {
     }
 
     @When("ele acessar a lista de pedidos")
-    public void acessarListaDePedidos() throws Exception {
+    public void acessarListaDePedidos() {
         sharedSteps.enviarRequisicaoGet("/pedidos/obter", pedidoId);
         response = sharedSteps.getResponse();
     }
 
     @Then("o sistema deve exibir os pedidos")
-    public void validarListaDePedidos() throws Exception {
+    public void validarListaDePedidos() {
         assert response.getStatusCode() == HttpStatus.OK;
         assert response.getBody() != null;
         assert response.getBody().contains(nomeCliente);
     }
 
     @Given("que um cliente tenta acessar um pedido que não existe")
-    public void clienteTentaAcessarPedidoInexistente() throws Exception {
+    public void clienteTentaAcessarPedidoInexistente() {
         pedidoId = 999999L; // ID de pedido inexistente
     }
 
-    @Then("o sistema deve retornar um status {int}")
-    public void validarErro(int statusCode) throws Exception {
-        assert response.getStatusCode().value() == statusCode;
-    }
-
     @When("ele solicitar o cancelamento do pedido")
-    public void solicitarCancelamentoPedido() throws Exception {
+    public void solicitarCancelamentoPedido() {
         try {
             Object payload = null;
 
-            String url = BASE_URL + "/pedidos/cancelar/" + pedidoId;
-            response = restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(payload), String.class);
+            sharedSteps.enviarRequisicaoPut("/pedidos/cancelar/", pedidoId,payload);
+            response = sharedSteps.getResponse();
         }
         catch (HttpClientErrorException ex) {
             response = new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
         }
     }
 
-    private long criarProduto(String nome, String descricao, double preco, int quantidade) throws Exception {
+    private long criarProduto(String nome, String descricao, double preco, int quantidade) {
         Produto produto = new Produto(nome, descricao, preco, quantidade);
         sharedSteps.enviarRequisicaoPost("/produtos", produto);
         response = sharedSteps.getResponse();

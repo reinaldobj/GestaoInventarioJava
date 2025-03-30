@@ -1,6 +1,5 @@
 package com.Acme.GestaoDeInventario.service;
 
-import ch.qos.logback.core.net.server.Client;
 import com.Acme.GestaoDeInventario.model.*;
 import com.Acme.GestaoDeInventario.repository.PedidoRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -97,9 +96,7 @@ public class PedidoServiceTest {
 
         when(pedidoRepository.save(any(Pedido.class))).thenReturn(pedido);
 
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            pedidoService.criarPedido(pedido);
-        });
+        Exception exception = assertThrows(RuntimeException.class, () -> pedidoService.criarPedido(pedido));
 
         assertEquals("O pedido deve ter itens", exception.getMessage());
     }
@@ -128,17 +125,12 @@ public class PedidoServiceTest {
         Usuario clientePedido = new Usuario();
         clientePedido.setId(1L);
 
-        int quantidadeProduto1 = produto.getQuantidade();
-        int quantidadeProduto2 = produto2.getQuantidade();
-
         pedido.setCliente(clientePedido);
         pedido.setItens(itens);
 
         when(pedidoRepository.save(any(Pedido.class))).thenReturn(pedido);
 
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            pedidoService.criarPedido(pedido);
-        });
+        Exception exception = assertThrows(RuntimeException.class, () -> pedidoService.criarPedido(pedido));
 
         assertEquals("Produto não encontrado", exception.getMessage());
     }
@@ -196,17 +188,12 @@ public class PedidoServiceTest {
         Usuario cliente = new Usuario();
         cliente.setId(1L);
 
-        int quantidadeProduto1 = produto.getQuantidade();
-        int quantidadeProduto2 = produto2.getQuantidade();
-
         pedido.setCliente(cliente);
         pedido.setItens(itens);
 
         when(pedidoRepository.save(any(Pedido.class))).thenReturn(pedido);
 
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            pedidoService.criarPedido(pedido);
-        });
+        Exception exception = assertThrows(RuntimeException.class, () -> pedidoService.criarPedido(pedido));
 
         assertEquals("Quantidade do produto não disponível", exception.getMessage());
     }
@@ -259,9 +246,7 @@ public class PedidoServiceTest {
     public void deveRetornarExcecaoAoBuscarPedidoInexistente() {
         when(pedidoRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RuntimeException.class, () -> {
-            pedidoService.buscarPedidoPorId(1L);
-        });
+        Exception exception = assertThrows(RuntimeException.class, () -> pedidoService.buscarPedidoPorId(1L));
 
         assertEquals("Pedido não encontrado", exception.getMessage());
     }

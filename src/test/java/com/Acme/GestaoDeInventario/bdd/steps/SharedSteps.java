@@ -1,5 +1,8 @@
 package com.Acme.GestaoDeInventario.bdd.steps;
 
+import com.jayway.jsonpath.JsonPath;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -7,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
+
 
 public class SharedSteps {
 
@@ -61,6 +65,19 @@ public class SharedSteps {
         catch (HttpClientErrorException ex) {
             response = new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
         }
+    }
+
+    @And("o sistema me retorna uma mensagem {string}")
+    public void validarMensagemErro(String mensagem) {
+        assert response.getBody() != null;
+        String mensagemErro = JsonPath.read(response.getBody(), "$.message").toString();
+
+        assert mensagemErro.equals(mensagem) : "Erro: A mensagem de erro não foi encontrada!";
+    }
+
+    @Then("o sistema deve retornar um status {int}")
+    public void validarErro(int statusCode) {
+        assert response.getStatusCode().value() == statusCode;
     }
 
     public ResponseEntity<String> getResponse() {

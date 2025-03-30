@@ -2,13 +2,17 @@ package com.Acme.GestaoDeInventario.exception;
 
 import java.time.LocalDateTime;
 
+@SuppressWarnings("unused")
 public class ErrorResponse {
+
     //Timestamp do erro
-    private LocalDateTime timestamp;
+    private final LocalDateTime timestamp;
 
-    private String message;
+    //Mensagem de erro
+    private final String message;
 
-    private int status;
+    //Status do erro
+    private final int status;
 
     public ErrorResponse(LocalDateTime timestamp, String message, int status) {
         this.timestamp = timestamp;

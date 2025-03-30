@@ -3,9 +3,7 @@ package com.Acme.GestaoDeInventario.controller;
 import com.Acme.GestaoDeInventario.model.Pedido;
 import com.Acme.GestaoDeInventario.model.StatusPedido;
 import com.Acme.GestaoDeInventario.service.PedidoService;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
