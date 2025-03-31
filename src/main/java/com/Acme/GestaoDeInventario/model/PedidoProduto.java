@@ -2,10 +2,20 @@ package com.Acme.GestaoDeInventario.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.*;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "pedido_produto")
 public class PedidoProduto {
+
+    public PedidoProduto(Pedido pedido, Produto produto, int quantidade, double precoUnitario) {
+        this.pedido = pedido;
+        this.produto = produto;
+        this.quantidade = quantidade;
+        this.precoUnitario = precoUnitario;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,49 +35,4 @@ public class PedidoProduto {
 
     @Column(nullable = false)
     private double precoUnitario;
-
-    public PedidoProduto(){ }
-
-    public PedidoProduto(Pedido pedido, Produto produto, int quantidade, double precoUnitario) {
-        this.pedido = pedido;
-        this.produto = produto;
-        this.quantidade = quantidade;
-        this.precoUnitario = precoUnitario;
-    }
-
-    public void setQuantidade(int quantidade) {
-        this.quantidade = quantidade;
-    }
-
-    public void setPedido(Pedido pedido) {
-        this.pedido = pedido;
-    }
-
-    public void setProduto(Produto produto) {
-        this.produto = produto;
-    }
-
-    public void setPrecoUnitario(double precoUnitario) {
-        this.precoUnitario = precoUnitario;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public Pedido getPedido() {
-        return pedido;
-    }
-
-    public Produto getProduto() {
-        return produto;
-    }
-
-    public int getQuantidade() {
-        return quantidade;
-    }
-
-    public double getPrecoUnitario() {
-        return precoUnitario;
-    }
 }

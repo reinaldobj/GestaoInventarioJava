@@ -27,8 +27,7 @@ public class SharedSteps {
         try {
             String url = BASE_URL + endpoint;
             response = restTemplate.postForEntity(url, payload, String.class);
-        }
-        catch (HttpClientErrorException ex) {
+        } catch (HttpClientErrorException ex) {
             response = new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
         }
     }
@@ -38,8 +37,7 @@ public class SharedSteps {
         try {
             String url = BASE_URL + endpoint + "/" + id;
             response = restTemplate.getForEntity(url, String.class);
-        }
-        catch (HttpClientErrorException ex) {
+        } catch (HttpClientErrorException ex) {
             response = new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
         }
     }
@@ -50,8 +48,7 @@ public class SharedSteps {
             String url = BASE_URL + endpoint + "/" + id;
             restTemplate.delete(url);
             response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        catch (HttpClientErrorException ex) {
+        } catch (HttpClientErrorException ex) {
             response = new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
         }
     }
@@ -61,14 +58,13 @@ public class SharedSteps {
         try {
             String url = BASE_URL + endpoint + "/" + id;
             response = restTemplate.exchange(url, HttpMethod.PUT, new HttpEntity<>(payload), String.class);
-        }
-        catch (HttpClientErrorException ex) {
+        } catch (HttpClientErrorException ex) {
             response = new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
         }
     }
 
     @And("o sistema me retorna uma mensagem {string}")
-    public void validarMensagemErro(String mensagem) {
+    public void validarMensagem(String mensagem) {
         assert response.getBody() != null;
         String mensagemErro = JsonPath.read(response.getBody(), "$.message").toString();
 
@@ -76,7 +72,7 @@ public class SharedSteps {
     }
 
     @Then("o sistema deve retornar um status {int}")
-    public void validarErro(int statusCode) {
+    public void validarStatus(int statusCode) {
         assert response.getStatusCode().value() == statusCode;
     }
 

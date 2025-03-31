@@ -21,30 +21,30 @@ public class UsuarioService {
     }
 
     public Usuario salvarUsuario(Usuario usuario) {
-        if(usuario.getNome() == null || usuario.getNome().isEmpty()){
+        if (usuario.getNome() == null || usuario.getNome().isEmpty()) {
             throw new UsuarioInvalidoException("O usuário deve ter um nome.");
         }
 
-        if(usuario.getEmail() == null || usuario.getEmail().isEmpty()){
+        if (usuario.getEmail() == null || usuario.getEmail().isEmpty()) {
             throw new UsuarioInvalidoException("O usuário deve ter um email.");
         }
 
-        if(usuario.getEndereco() == null || usuario.getEndereco().isEmpty()){
+        if (usuario.getEndereco() == null || usuario.getEndereco().isEmpty()) {
             throw new UsuarioInvalidoException("O usuário deve ter um endereço.");
         }
 
-        if(usuario.getTelefone() == null || usuario.getTelefone().isEmpty()){
+        if (usuario.getTelefone() == null || usuario.getTelefone().isEmpty()) {
             throw new UsuarioInvalidoException("O usuário deve ter um telefone.");
         }
 
-        if(usuario.getTipoUsuario() == null){
+        if (usuario.getTipoUsuario() == null) {
             throw new UsuarioInvalidoException("O usuário deve ter um tipo de usuário.");
         }
 
         return usuarioRepository.save(usuario);
     }
 
-    public List<Usuario> listarTodos(){
+    public List<Usuario> listarTodos() {
         return usuarioRepository.findAll();
     }
 
@@ -54,10 +54,10 @@ public class UsuarioService {
                 .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
     }
 
-    public Usuario atualizarUsuario(long id, Usuario usuario){
+    public Usuario atualizarUsuario(long id, Usuario usuario) {
         Usuario usuarioDb = usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
-        if(usuarioDb != null){
+        if (usuarioDb != null) {
             usuarioDb.setNome(usuario.getNome());
             usuarioDb.setEmail(usuario.getEmail());
             usuarioDb.setEndereco(usuario.getEndereco());
@@ -69,7 +69,7 @@ public class UsuarioService {
         return usuarioDb;
     }
 
-    public void deletarUsuario(Long id){
+    public void deletarUsuario(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new UsuarioNaoEncontradoException("Usuário não encontrado"));
 

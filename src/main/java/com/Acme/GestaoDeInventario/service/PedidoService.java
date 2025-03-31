@@ -4,7 +4,10 @@ import com.Acme.GestaoDeInventario.exception.PedidoInvalidoException;
 import com.Acme.GestaoDeInventario.exception.PedidoNaoEncontradoException;
 import com.Acme.GestaoDeInventario.exception.ProdutoNaoEncontradoException;
 import com.Acme.GestaoDeInventario.exception.ProdutoSemEstoqueException;
-import com.Acme.GestaoDeInventario.model.*;
+import com.Acme.GestaoDeInventario.model.Pedido;
+import com.Acme.GestaoDeInventario.model.PedidoProduto;
+import com.Acme.GestaoDeInventario.model.Produto;
+import com.Acme.GestaoDeInventario.model.StatusPedido;
 import com.Acme.GestaoDeInventario.repository.PedidoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,7 +37,7 @@ public class PedidoService {
 
         usuarioService.buscarUsuarioPorId(pedido.getCliente().getId());
 
-        if(pedido.getItens() == null)
+        if (pedido.getItens() == null)
             throw new PedidoInvalidoException("O pedido deve ter itens");
 
         for (PedidoProduto item : pedido.getItens()) {

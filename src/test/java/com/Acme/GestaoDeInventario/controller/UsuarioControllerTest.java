@@ -9,29 +9,26 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 public class UsuarioControllerTest {
+    private static final String URL_BASE = "/usuarios";
+    private static final String USUARIO_NOME = "João Silva";
+    private static final String USUARIO_ENDERECO = "Rua Teste, 123";
+    private static final String USUARIO_EMAIL = "teste@gmail.com";
+    private static final String USUARIO_TELEFONE = "1234-5678";
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private ObjectMapper objectMapper;
-
-    private  static final String URL_BASE = "/usuarios";
-    private  static final String USUARIO_NOME = "João Silva";
-    private  static final String USUARIO_ENDERECO = "Rua Teste, 123";
-    private  static final String USUARIO_EMAIL = "teste@gmail.com";
-    private  static final String USUARIO_TELEFONE = "1234-5678";
-
     private String usuarioJsonValido;
     private String usuarioJsonSemNome;
 
@@ -41,7 +38,7 @@ public class UsuarioControllerTest {
     void setup() throws Exception {
         testHelper = new TestHelper(mockMvc, objectMapper);
         usuarioJsonValido = testHelper.gerarJson(new Usuario(USUARIO_NOME, USUARIO_ENDERECO, USUARIO_EMAIL, USUARIO_TELEFONE, TipoUsuario.CLIENTE));
-        usuarioJsonSemNome= testHelper.gerarJson(new Usuario("", USUARIO_ENDERECO, USUARIO_EMAIL, USUARIO_TELEFONE, TipoUsuario.CLIENTE));
+        usuarioJsonSemNome = testHelper.gerarJson(new Usuario("", USUARIO_ENDERECO, USUARIO_EMAIL, USUARIO_TELEFONE, TipoUsuario.CLIENTE));
     }
 
     @Test

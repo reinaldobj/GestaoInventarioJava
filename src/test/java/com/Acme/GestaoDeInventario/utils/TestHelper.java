@@ -1,6 +1,9 @@
 package com.Acme.GestaoDeInventario.utils;
 
-import com.Acme.GestaoDeInventario.model.*;
+import com.Acme.GestaoDeInventario.model.PedidoProduto;
+import com.Acme.GestaoDeInventario.model.Produto;
+import com.Acme.GestaoDeInventario.model.TipoUsuario;
+import com.Acme.GestaoDeInventario.model.Usuario;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;

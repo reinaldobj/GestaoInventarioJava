@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 public class ProdutoService {
-    private  final ProdutoRepository produtoRepository;
+    private final ProdutoRepository produtoRepository;
 
     @Autowired
     public ProdutoService(ProdutoRepository produtoRepository) {
@@ -21,15 +21,15 @@ public class ProdutoService {
 
     // Método para salvar um produto
     public Produto salvarProduto(@Valid Produto produto) {
-        if(produto.getNome() == null || produto.getNome().isEmpty()){
+        if (produto.getNome() == null || produto.getNome().isEmpty()) {
             throw new ProdutoInvalidoException("O produto deve ter um nome");
         }
 
-        if(produto.getDescricao() == null || produto.getDescricao().isEmpty()){
+        if (produto.getDescricao() == null || produto.getDescricao().isEmpty()) {
             throw new ProdutoInvalidoException("O produto deve ter uma descrição");
         }
 
-        if(produto.getQuantidade() <= 0){
+        if (produto.getQuantidade() <= 0) {
             throw new ProdutoInvalidoException("A quantidade deve ser maior ou igual a zero");
         }
 
@@ -51,7 +51,7 @@ public class ProdutoService {
     public Produto buscarProdutoPorNome(String nome) {
         var produto = produtoRepository.findByNome(nome).getFirst();
 
-        if(produto == null)
+        if (produto == null)
             throw new ProdutoNaoEncontradoException("Produto não encontrado");
 
         return produto;

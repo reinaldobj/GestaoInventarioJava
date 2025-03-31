@@ -14,20 +14,18 @@ import java.util.List;
 import java.util.Map;
 
 public class ProdutoSteps {
+    private final SharedSteps sharedSteps;
     private ResponseEntity<String> response;
-
     private Produto produto;
     private Long produtoId;
 
-    private final SharedSteps sharedSteps;
-
     @Autowired
-    public ProdutoSteps(SharedSteps sharedSteps){
+    public ProdutoSteps(SharedSteps sharedSteps) {
         this.sharedSteps = sharedSteps;
     }
 
     @Given("que o usuário deseja cadastrar um novo produto com os dados:")
-    public void criarProdutoValido(io.cucumber.datatable.DataTable table){
+    public void criarProdutoValido(io.cucumber.datatable.DataTable table) {
         List<Map<String, String>> data = table.asMaps();
         Map<String, String> row = data.getFirst(); // Pega a primeira linha da tabela
 
@@ -44,7 +42,7 @@ public class ProdutoSteps {
 
         response = sharedSteps.getResponse();
 
-       if (response.getStatusCode() == HttpStatus.CREATED) {
+        if (response.getStatusCode() == HttpStatus.CREATED) {
             produtoId = Long.parseLong(JsonPath.read(response.getBody(), "$.id").toString());
         }
     }
@@ -79,9 +77,9 @@ public class ProdutoSteps {
 
     @When("eu envio uma requisição DELETE para {string}")
     public void enviarRequisicaoDelete(String endpoint) {
-            assert produtoId != null : "Erro: produtoId está nulo! O produto precisa ser criado antes de ser excluído.";
-            sharedSteps.enviarRequisicaoDelete(endpoint, produtoId);
-            response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        assert produtoId != null : "Erro: produtoId está nulo! O produto precisa ser criado antes de ser excluído.";
+        sharedSteps.enviarRequisicaoDelete(endpoint, produtoId);
+        response = new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @When("eu coloco um codigo inexistente")

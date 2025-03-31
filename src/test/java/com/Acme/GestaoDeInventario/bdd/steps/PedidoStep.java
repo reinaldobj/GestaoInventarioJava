@@ -61,7 +61,7 @@ public class PedidoStep {
         valorTotal = valorTotalItem1 + valorTotalItem2;
 
         pedido = new Pedido();
-        pedido.setItens(List.of(itemPedido1,itemPedido2));
+        pedido.setItens(List.of(itemPedido1, itemPedido2));
         pedido.setCliente(clientePedido);
     }
 
@@ -101,7 +101,7 @@ public class PedidoStep {
     }
 
     @And("pelo menos um dos produtos não possui estoque suficiente")
-    public void alterarQuantidadeDeItemDoPedido(){
+    public void alterarQuantidadeDeItemDoPedido() {
         for (PedidoProduto item : pedido.getItens()) {
             if (item.getProduto().getQuantidade() < item.getQuantidade()) {
                 item.setQuantidade(item.getProduto().getQuantidade() + 99999);
@@ -142,10 +142,9 @@ public class PedidoStep {
         try {
             Object payload = null;
 
-            sharedSteps.enviarRequisicaoPut("/pedidos/cancelar/", pedidoId,payload);
+            sharedSteps.enviarRequisicaoPut("/pedidos/cancelar/", pedidoId, payload);
             response = sharedSteps.getResponse();
-        }
-        catch (HttpClientErrorException ex) {
+        } catch (HttpClientErrorException ex) {
             response = new ResponseEntity<>(ex.getResponseBodyAsString(), ex.getStatusCode());
         }
     }

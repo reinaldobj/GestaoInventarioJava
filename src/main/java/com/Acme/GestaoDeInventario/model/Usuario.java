@@ -1,14 +1,25 @@
 package com.Acme.GestaoDeInventario.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+@Data
+@NoArgsConstructor
 @Entity
 @Table(name = "usuarios")
 public class Usuario {
+
+    public Usuario(String nome, String email, String endereco, String telefone, TipoUsuario tipoUsuario) {
+        this.nome = nome;
+        this.email = email;
+        this.endereco = endereco;
+        this.telefone = telefone;
+        this.tipoUsuario = tipoUsuario;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,64 +42,5 @@ public class Usuario {
     private String telefone;
 
     @Enumerated(EnumType.STRING)
-    private  TipoUsuario tipoUsuario;
-
-    public Usuario() {
-    }
-
-    public Usuario(String nome, String email, String endereco, String telefone, TipoUsuario tipoUsuario) {
-        this.nome = nome;
-        this.email = email;
-        this.endereco = endereco;
-        this.telefone = telefone;
-        this.tipoUsuario = tipoUsuario;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getEndereco() {
-        return endereco;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setEndereco(String endereco) {
-        this.endereco = endereco;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-    public TipoUsuario getTipoUsuario() {
-        return tipoUsuario;
-    }
-
-    public void setTipoUsuario(TipoUsuario tipoUsuario) {
-        this.tipoUsuario = tipoUsuario;
-    }
+    private TipoUsuario tipoUsuario;
 }

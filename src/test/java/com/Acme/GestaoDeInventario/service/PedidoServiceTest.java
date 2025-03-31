@@ -28,6 +28,28 @@ public class PedidoServiceTest {
     @Mock
     private UsuarioService usuarioService;
 
+    private static Produto criarMockProduto(long id, int quantidade, double preco, String nome, String descricao) {
+        Produto produto = new Produto();
+        produto.setId(id);
+        produto.setQuantidade(quantidade);
+        produto.setPreco(preco);
+        produto.setNome(nome);
+        produto.setDescricao(descricao);
+
+        return produto;
+    }
+
+    private static Usuario criarMockUsuario(long id, String nome, String email, String endereco, String telefone) {
+        Usuario cliente = new Usuario();
+        cliente.setId(id);
+        cliente.setNome(nome);
+        cliente.setEmail(email);
+        cliente.setEndereco(endereco);
+        cliente.setTelefone(telefone);
+        cliente.setTipoUsuario(TipoUsuario.CLIENTE);
+        return cliente;
+    }
+
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -135,28 +157,6 @@ public class PedidoServiceTest {
         assertEquals("Produto não encontrado", exception.getMessage());
     }
 
-    private static Produto criarMockProduto(long id, int quantidade, double preco, String nome, String descricao) {
-        Produto produto = new Produto();
-        produto.setId(id);
-        produto.setQuantidade(quantidade);
-        produto.setPreco(preco);
-        produto.setNome(nome);
-        produto.setDescricao(descricao);
-
-        return produto;
-    }
-
-    private static Usuario criarMockUsuario(long id, String nome, String email, String endereco, String telefone) {
-        Usuario cliente = new Usuario();
-        cliente.setId(id);
-        cliente.setNome(nome);
-        cliente.setEmail(email);
-        cliente.setEndereco(endereco);
-        cliente.setTelefone(telefone);
-        cliente.setTipoUsuario(TipoUsuario.CLIENTE);
-        return cliente;
-    }
-
     @Test
     public void deveLancarExceptionAoTentarCadasrtarPedidoSemEstoque() {
         Produto produto = new Produto();
@@ -232,7 +232,7 @@ public class PedidoServiceTest {
         pedido.setCliente(cliente);
         pedido.setItens(itens);
 
-        when (pedidoRepository.save(any(Pedido.class))).thenReturn(pedido);
+        when(pedidoRepository.save(any(Pedido.class))).thenReturn(pedido);
         when(pedidoRepository.findById(1L)).thenReturn(Optional.of(pedido));
 
         Pedido resultado = pedidoService.buscarPedidoPorId(1L);

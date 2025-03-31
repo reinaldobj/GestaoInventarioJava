@@ -22,12 +22,12 @@ public class UsuarioStep {
     @Autowired
     private ObjectMapper objectMapper;
 
-    public UsuarioStep(SharedSteps sharedSteps){
+    public UsuarioStep(SharedSteps sharedSteps) {
         this.sharedSteps = sharedSteps;
     }
 
     @Given("que o usuário deseja se cadastrar com os seguintes dados:")
-    public void cadastrarUsuario(io.cucumber.datatable.DataTable table){
+    public void cadastrarUsuario(io.cucumber.datatable.DataTable table) {
         List<Map<String, String>> data = table.asMaps();
         Map<String, String> row = data.getFirst(); // Pega a primeira linha da tabela
 
@@ -95,7 +95,7 @@ public class UsuarioStep {
     }
 
     @When("eu envio uma requisição PUT para {string} com os novos dados:")
-    public void enviarRequisicaoPut(String endpoint, io.cucumber.datatable.DataTable table){
+    public void enviarRequisicaoPut(String endpoint, io.cucumber.datatable.DataTable table) {
         List<Map<String, String>> data = table.asMaps();
         Map<String, String> row = data.getFirst(); // Pega a primeira linha da tabela
 

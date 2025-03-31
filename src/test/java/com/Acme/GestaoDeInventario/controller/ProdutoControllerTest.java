@@ -37,7 +37,7 @@ public class ProdutoControllerTest {
 
     private TestHelper testHelper;
 
-        @BeforeEach
+    @BeforeEach
     void setup() throws Exception {
         testHelper = new TestHelper(mockMvc, objectMapper);
         produtoJsonValido = testHelper.gerarJson(new Produto(PRODUTO_NOME, PRODUTO_DESCRICAO, 100.0, 10));

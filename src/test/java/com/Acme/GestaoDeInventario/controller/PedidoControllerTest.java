@@ -25,11 +25,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class PedidoControllerTest {
 
     private static final String URL_PEDIDOS = "/pedidos";
-
+    private final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private MockMvc mockMvc;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
     private TestHelper testHelper;
 
     @BeforeEach
