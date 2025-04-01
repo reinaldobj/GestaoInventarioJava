@@ -1,5 +1,7 @@
 package com.Acme.GestaoDeInventario.controller;
 
+import com.Acme.GestaoDeInventario.dto.ProdutoDTO;
+import com.Acme.GestaoDeInventario.mapper.ProdutoMapper;
 import com.Acme.GestaoDeInventario.model.Produto;
 import com.Acme.GestaoDeInventario.service.ProdutoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,18 +25,28 @@ public class ProdutoController {
     }
 
     @PostMapping
-    public ResponseEntity<Produto> criarProduto(@Valid @RequestBody Produto produto) {
+    public ResponseEntity<ProdutoDTO> criarProduto(@Valid @RequestBody ProdutoDTO produtoDTO) {
+        Produto produto = ProdutoMapper.INSTANCE.produtoDTOToProduto(produtoDTO);
+
         Produto produtoCriado = produtoService.salvarProduto(produto);
+
+        ProdutoDTO produtoDTOCriado = ProdutoMapper.INSTANCE.produtoToProdutoDTO(produtoCriado);
+
         return ResponseEntity
-                .created(URI.create("/produtos" + produtoCriado.getId()))
-                .body(produtoCriado);
+                .created(URI.create("/produtos" + produtoDTOCriado.getId()))
+                .body(produtoDTOCriado);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Produto> atualizarProduto(@PathVariable long id, @Valid @RequestBody Produto produto) {
+    public ResponseEntity<ProdutoDTO> atualizarProduto(@PathVariable long id, @Valid @RequestBody ProdutoDTO produtoDTO) {
+        Produto produto = ProdutoMapper.INSTANCE.produtoDTOToProduto(produtoDTO);
+
         Produto produtoAtualizado = produtoService.atualizarProduto(id, produto);
+
+        ProdutoDTO produtoDTOAtualizado = ProdutoMapper.INSTANCE.produtoToProdutoDTO(produtoAtualizado);
+
         if (produtoAtualizado != null) {
-            return ResponseEntity.ok(produtoAtualizado);
+            return ResponseEntity.ok(produtoDTOAtualizado);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -52,14 +64,23 @@ public class ProdutoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Produto>> listarProdutos() {
-        return ResponseEntity.ok(produtoService.listarTodos());
+    public ResponseEntity<List<ProdutoDTO>> listarProdutos() {
+        List<Produto> produtos = produtoService.listarTodos();
+
+        List<ProdutoDTO> produtosDTO = produtos.stream()
+                .map(ProdutoMapper.INSTANCE::produtoToProdutoDTO)
+                .toList();
+
+        return ResponseEntity.ok(produtosDTO);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Produto> buscarProdutoPorId(@PathVariable long id) {
+    public ResponseEntity<ProdutoDTO> buscarProdutoPorId(@PathVariable long id) {
         Produto produto = produtoService.buscarProdutoPorId(id);
-        return ResponseEntity.ok(produto);
+
+        ProdutoDTO produtoDTO = ProdutoMapper.INSTANCE.produtoToProdutoDTO(produto);
+
+        return ResponseEntity.ok(produtoDTO);
 
     }
 }

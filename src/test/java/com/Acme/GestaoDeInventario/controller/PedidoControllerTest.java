@@ -1,6 +1,6 @@
 package com.Acme.GestaoDeInventario.controller;
 
-import com.Acme.GestaoDeInventario.model.*;
+import com.Acme.GestaoDeInventario.dto.*;
 import com.Acme.GestaoDeInventario.utils.TestHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,15 +37,15 @@ public class PedidoControllerTest {
 
     @Test
     void deveCriarPedido() throws Exception {
-        Produto produto1 = testHelper.criarProduto("Cadeira", "Cadeira Teste", 100.00, 100);
-        Produto produto2 = testHelper.criarProduto("Mesa", "Mesa Teste", 1000.00, 100);
+        ProdutoDTO produto1 = testHelper.criarProduto("Cadeira", "Cadeira Teste", 100.00, 100);
+        ProdutoDTO produto2 = testHelper.criarProduto("Mesa", "Mesa Teste", 1000.00, 100);
 
-        PedidoProduto itemPedido1 = testHelper.criarPedidoProduto(produto1.getId(), 2);
-        PedidoProduto itemPedido2 = testHelper.criarPedidoProduto(produto2.getId(), 1);
+        PedidoProdutoDTO itemPedido1 = testHelper.criarPedidoProduto(produto1.getId(), 2);
+        PedidoProdutoDTO itemPedido2 = testHelper.criarPedidoProduto(produto2.getId(), 1);
 
-        Usuario usuario = testHelper.criarUsuario("Usuario Teste", "teste@teste.com");
+        UsuarioDTO usuario = testHelper.criarUsuario("Usuario Teste", "teste@teste.com");
 
-        Pedido pedido = new Pedido();
+        PedidoDTO pedido = new PedidoDTO();
         pedido.setCliente(usuario);
         pedido.setItens(List.of(itemPedido1, itemPedido2));
 
@@ -56,10 +56,10 @@ public class PedidoControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(pedido)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.status").value(StatusPedido.PENDENTE.toString()))
+                .andExpect(jsonPath("$.status").value("PENDENTE"))
                 .andReturn();
 
-        Pedido pedidoCriado = objectMapper.readValue(resultado.getResponse().getContentAsString(), Pedido.class);
+        PedidoDTO pedidoCriado = objectMapper.readValue(resultado.getResponse().getContentAsString(), PedidoDTO.class);
 
         assertTrue(pedidoCriado.getId() > 0);
         assertEquals(estoqueEsperadoProduto1, pedidoCriado.getItens().get(0).getProduto().getQuantidade());
@@ -68,11 +68,11 @@ public class PedidoControllerTest {
 
     @Test
     void deveRetornarExceptionAoCadastrarPedidoComItemQueNaoExiste() throws Exception {
-        Usuario usuario = testHelper.criarUsuario("Cliente Teste", "cliente@teste.com");
+        UsuarioDTO usuario = testHelper.criarUsuario("Cliente Teste", "cliente@teste.com");
 
-        PedidoProduto itemPedidoInvalido = testHelper.criarPedidoProduto(9999L, 2);
+        PedidoProdutoDTO itemPedidoInvalido = testHelper.criarPedidoProduto(9999L, 2);
 
-        Pedido pedido = new Pedido();
+        PedidoDTO pedido = new PedidoDTO();
         pedido.setCliente(usuario);
         pedido.setItens(List.of(itemPedidoInvalido));
 
@@ -85,9 +85,9 @@ public class PedidoControllerTest {
 
     @Test
     void deveRetornarExceptionAoCadastrarPedidoSemItens() throws Exception {
-        Usuario usuario = testHelper.criarUsuario("Cliente Teste", "cliente@teste.com");
+        UsuarioDTO usuario = testHelper.criarUsuario("Cliente Teste", "cliente@teste.com");
 
-        Pedido pedido = new Pedido();
+        PedidoDTO pedido = new PedidoDTO();
         pedido.setCliente(usuario);
 
         mockMvc.perform(post(URL_PEDIDOS)
@@ -99,16 +99,16 @@ public class PedidoControllerTest {
 
     @Test
     void deveRetornarExceptionAoCadastrarPedidoComUsuarioQueNaoExiste() throws Exception {
-        Produto produto1 = testHelper.criarProduto("Cadeira", "Cadeira Teste", 100.00, 100);
-        Produto produto2 = testHelper.criarProduto("Mesa", "Mesa Teste", 1000.00, 100);
+        ProdutoDTO produto1 = testHelper.criarProduto("Cadeira", "Cadeira Teste", 100.00, 100);
+        ProdutoDTO produto2 = testHelper.criarProduto("Mesa", "Mesa Teste", 1000.00, 100);
 
-        PedidoProduto itemPedido1 = testHelper.criarPedidoProduto(produto1.getId(), 2);
-        PedidoProduto itemPedido2 = testHelper.criarPedidoProduto(produto2.getId(), 1);
+        PedidoProdutoDTO itemPedido1 = testHelper.criarPedidoProduto(produto1.getId(), 2);
+        PedidoProdutoDTO itemPedido2 = testHelper.criarPedidoProduto(produto2.getId(), 1);
 
-        Usuario usuario = new Usuario();
+        UsuarioDTO usuario = new UsuarioDTO();
         usuario.setId(9999L);
 
-        Pedido pedido = new Pedido();
+        PedidoDTO pedido = new PedidoDTO();
         pedido.setCliente(usuario);
         pedido.setItens(List.of(itemPedido1, itemPedido2));
 

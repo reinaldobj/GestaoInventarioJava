@@ -1,7 +1,6 @@
 package com.Acme.GestaoDeInventario.controller;
 
-import com.Acme.GestaoDeInventario.model.TipoUsuario;
-import com.Acme.GestaoDeInventario.model.Usuario;
+import com.Acme.GestaoDeInventario.dto.UsuarioDTO;
 import com.Acme.GestaoDeInventario.utils.TestHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,8 +36,8 @@ public class UsuarioControllerTest {
     @BeforeEach
     void setup() throws Exception {
         testHelper = new TestHelper(mockMvc, objectMapper);
-        usuarioJsonValido = testHelper.gerarJson(new Usuario(USUARIO_NOME, USUARIO_ENDERECO, USUARIO_EMAIL, USUARIO_TELEFONE, TipoUsuario.CLIENTE));
-        usuarioJsonSemNome = testHelper.gerarJson(new Usuario("", USUARIO_ENDERECO, USUARIO_EMAIL, USUARIO_TELEFONE, TipoUsuario.CLIENTE));
+        usuarioJsonValido = testHelper.gerarJson(new UsuarioDTO(USUARIO_NOME, USUARIO_ENDERECO, USUARIO_EMAIL, USUARIO_TELEFONE, "CLIENTE"));
+        usuarioJsonSemNome = testHelper.gerarJson(new UsuarioDTO("", USUARIO_ENDERECO, USUARIO_EMAIL, USUARIO_TELEFONE, "CLIENTE"));
     }
 
     @Test
@@ -62,7 +61,7 @@ public class UsuarioControllerTest {
 
     @Test
     void deveRetornarErroAoCriarUsuarioSemEmail() throws Exception {
-        var usuarioJsonInvalido = testHelper.gerarJson(new Usuario(USUARIO_NOME, "", USUARIO_ENDERECO, USUARIO_TELEFONE, TipoUsuario.CLIENTE));
+        var usuarioJsonInvalido = testHelper.gerarJson(new UsuarioDTO(USUARIO_NOME, "", USUARIO_ENDERECO, USUARIO_TELEFONE, "CLIENTE"));
         mockMvc.perform(post(URL_BASE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJsonInvalido))
@@ -72,7 +71,7 @@ public class UsuarioControllerTest {
 
     @Test
     void deveRetornarErroAoCriarUsuarioSemEndereco() throws Exception {
-        var usuarioJsonInvalido = testHelper.gerarJson(new Usuario(USUARIO_NOME, USUARIO_EMAIL, "", USUARIO_TELEFONE, TipoUsuario.CLIENTE));
+        var usuarioJsonInvalido = testHelper.gerarJson(new UsuarioDTO(USUARIO_NOME, USUARIO_EMAIL, "", USUARIO_TELEFONE, "CLIENTE"));
         mockMvc.perform(post(URL_BASE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJsonInvalido))
@@ -82,7 +81,7 @@ public class UsuarioControllerTest {
 
     @Test
     void deveRetornarErroAoCriarUsuarioSemTelefone() throws Exception {
-        var usuarioJsonInvalido = testHelper.gerarJson(new Usuario(USUARIO_NOME, USUARIO_ENDERECO, USUARIO_EMAIL, "", TipoUsuario.CLIENTE));
+        var usuarioJsonInvalido = testHelper.gerarJson(new UsuarioDTO(USUARIO_NOME, USUARIO_ENDERECO, USUARIO_EMAIL, "", "CLIENTE"));
         mockMvc.perform(post(URL_BASE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJsonInvalido))
@@ -92,7 +91,7 @@ public class UsuarioControllerTest {
 
     @Test
     void deveRetornarUmUsuarioPorIdComSucesso() throws Exception {
-        Usuario usuario = testHelper.criarUsuario(USUARIO_NOME, USUARIO_EMAIL);
+        UsuarioDTO usuario = testHelper.criarUsuario(USUARIO_NOME, USUARIO_EMAIL);
         mockMvc.perform(get(URL_BASE + "/" + usuario.getId())
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

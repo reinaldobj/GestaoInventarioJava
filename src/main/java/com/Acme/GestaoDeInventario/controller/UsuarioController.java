@@ -1,5 +1,7 @@
 package com.Acme.GestaoDeInventario.controller;
 
+import com.Acme.GestaoDeInventario.dto.UsuarioDTO;
+import com.Acme.GestaoDeInventario.mapper.UsuarioMapper;
 import com.Acme.GestaoDeInventario.model.Usuario;
 import com.Acme.GestaoDeInventario.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,33 +24,55 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<Usuario> criarUsuario(@Valid @RequestBody Usuario usuario) {
+    public ResponseEntity<UsuarioDTO> criarUsuario(@Valid @RequestBody UsuarioDTO usuarioDTO) {
+        Usuario usuario = UsuarioMapper.INSTANCE.usuarioDTOToUsuario(usuarioDTO);
+
         Usuario usuarioCriado = usuarioService.salvarUsuario(usuario);
+
+        UsuarioDTO usuarioDTOCriado = UsuarioMapper.INSTANCE.usuarioToUsuarioDTO(usuarioCriado);
+
         return ResponseEntity
-                .created(URI.create("/usuarios/" + usuarioCriado.getId()))
-                .body(usuarioCriado);
+                .created(URI.create("/usuarios/" + usuarioDTOCriado.getId()))
+                .body(usuarioDTOCriado);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> buscarUsuarioPorId(@PathVariable Long id) {
+    public ResponseEntity<UsuarioDTO> buscarUsuarioPorId(@PathVariable Long id) {
         Usuario usuario = usuarioService.buscarUsuarioPorId(id);
+        UsuarioDTO usuarioDTO = UsuarioMapper.INSTANCE.usuarioToUsuarioDTO(usuario);
+
         if (usuario != null) {
-            return ResponseEntity.ok(usuario);
+            return ResponseEntity.ok(usuarioDTO);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping
-    public ResponseEntity<List<Usuario>> listarUsuarios() {
-        return ResponseEntity.ok(usuarioService.listarTodos());
+    public ResponseEntity<List<UsuarioDTO>> listarUsuarios() {
+        List<Usuario> usuarios = usuarioService.listarTodos();
+
+        if (usuarios.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        List<UsuarioDTO> usuariosDTO = usuarios.stream()
+                .map(UsuarioMapper.INSTANCE::usuarioToUsuarioDTO)
+                .toList();
+
+        return ResponseEntity.ok(usuariosDTO);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> atualizarUsuario(@PathVariable long id, @RequestBody Usuario usuario) {
+    public ResponseEntity<UsuarioDTO> atualizarUsuario(@PathVariable long id, @RequestBody UsuarioDTO usuarioDTO) {
+        Usuario usuario = UsuarioMapper.INSTANCE.usuarioDTOToUsuario(usuarioDTO);
+
         Usuario usuarioAtualizado = usuarioService.atualizarUsuario(id, usuario);
+
+        UsuarioDTO usuarioDTOAtualizado = UsuarioMapper.INSTANCE.usuarioToUsuarioDTO(usuarioAtualizado);
+
         if (usuarioAtualizado != null) {
-            return ResponseEntity.ok(usuarioAtualizado);
+            return ResponseEntity.ok(usuarioDTOAtualizado);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -57,6 +81,7 @@ public class UsuarioController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarUsuario(@PathVariable Long id) {
         Usuario usuario = usuarioService.buscarUsuarioPorId(id);
+
         if (usuario != null) {
             usuarioService.deletarUsuario(id);
             return ResponseEntity.noContent().build();

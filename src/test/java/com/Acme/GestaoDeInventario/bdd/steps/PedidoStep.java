@@ -1,6 +1,6 @@
 package com.Acme.GestaoDeInventario.bdd.steps;
 
-import com.Acme.GestaoDeInventario.model.*;
+import com.Acme.GestaoDeInventario.dto.*;
 import com.jayway.jsonpath.JsonPath;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -17,7 +17,7 @@ public class PedidoStep {
     private final SharedSteps sharedSteps;
     private ResponseEntity<String> response;
 
-    private Pedido pedido;
+    private PedidoDTO pedido;
     private Long pedidoId;
     private double valorTotal;
     private String nomeCliente;
@@ -38,20 +38,20 @@ public class PedidoStep {
         nomeCliente = "Cliente Teste";
         long idCliente = criarUsuario(nomeCliente, "cliente@teste.com", "Rua Teste, 123", "123456789");
 
-        Produto produtoPedido1 = new Produto();
+        ProdutoDTO produtoPedido1 = new ProdutoDTO();
         produtoPedido1.setId(idProduto1);
 
-        Produto produtoPedido2 = new Produto();
+        ProdutoDTO produtoPedido2 = new ProdutoDTO();
         produtoPedido2.setId(idProduto2);
 
-        Usuario clientePedido = new Usuario();
+        UsuarioDTO clientePedido = new UsuarioDTO();
         clientePedido.setId(idCliente);
 
-        PedidoProduto itemPedido1 = new PedidoProduto();
+        PedidoProdutoDTO itemPedido1 = new PedidoProdutoDTO();
         itemPedido1.setProduto(produtoPedido1);
         itemPedido1.setQuantidade(2);
 
-        PedidoProduto itemPedido2 = new PedidoProduto();
+        PedidoProdutoDTO itemPedido2 = new PedidoProdutoDTO();
         itemPedido2.setProduto(produtoPedido2);
         itemPedido2.setQuantidade(1);
 
@@ -60,7 +60,7 @@ public class PedidoStep {
 
         valorTotal = valorTotalItem1 + valorTotalItem2;
 
-        pedido = new Pedido();
+        pedido = new PedidoDTO();
         pedido.setItens(List.of(itemPedido1, itemPedido2));
         pedido.setCliente(clientePedido);
     }
@@ -93,16 +93,16 @@ public class PedidoStep {
     public void clienteTentaCriarPedidoSemSelecionarProdutos() throws Exception {
         long idCliente = criarUsuario("Cliente Teste", "cliente@teste.com", "Rua Teste, 123", "123456789");
 
-        Usuario clientePedido = new Usuario();
+        UsuarioDTO clientePedido = new UsuarioDTO();
         clientePedido.setId(idCliente);
 
-        pedido = new Pedido();
+        pedido = new PedidoDTO();
         pedido.setCliente(clientePedido);
     }
 
     @And("pelo menos um dos produtos não possui estoque suficiente")
     public void alterarQuantidadeDeItemDoPedido() {
-        for (PedidoProduto item : pedido.getItens()) {
+        for (PedidoProdutoDTO item : pedido.getItens()) {
             if (item.getProduto().getQuantidade() < item.getQuantidade()) {
                 item.setQuantidade(item.getProduto().getQuantidade() + 99999);
             }
@@ -150,7 +150,7 @@ public class PedidoStep {
     }
 
     private long criarProduto(String nome, String descricao, double preco, int quantidade) {
-        Produto produto = new Produto(nome, descricao, preco, quantidade);
+        ProdutoDTO produto = new ProdutoDTO(nome, descricao, preco, quantidade);
         sharedSteps.enviarRequisicaoPost("/produtos", produto);
         response = sharedSteps.getResponse();
 
@@ -162,7 +162,7 @@ public class PedidoStep {
     }
 
     private long criarUsuario(String nome, String email, String endereco, String telefone) throws Exception {
-        Usuario usuario = new Usuario(nome, email, endereco, telefone, TipoUsuario.CLIENTE);
+        UsuarioDTO usuario = new UsuarioDTO(nome, email, endereco, telefone, "CLIENTE");
         sharedSteps.enviarRequisicaoPost("/usuarios", usuario);
         response = sharedSteps.getResponse();
 

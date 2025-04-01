@@ -1,6 +1,6 @@
 package com.Acme.GestaoDeInventario.bdd.steps;
 
-import com.Acme.GestaoDeInventario.model.Produto;
+import com.Acme.GestaoDeInventario.dto.ProdutoDTO;
 import com.jayway.jsonpath.JsonPath;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -16,7 +16,7 @@ import java.util.Map;
 public class ProdutoSteps {
     private final SharedSteps sharedSteps;
     private ResponseEntity<String> response;
-    private Produto produto;
+    private ProdutoDTO produto;
     private Long produtoId;
 
     @Autowired
@@ -29,7 +29,7 @@ public class ProdutoSteps {
         List<Map<String, String>> data = table.asMaps();
         Map<String, String> row = data.getFirst(); // Pega a primeira linha da tabela
 
-        produto = new Produto();
+        produto = new ProdutoDTO();
         produto.setNome(row.get("nome"));
         produto.setDescricao(row.get("descricao"));
         produto.setPreco(Double.parseDouble(row.get("preco")));

@@ -1,7 +1,6 @@
 package com.Acme.GestaoDeInventario.bdd.steps;
 
-import com.Acme.GestaoDeInventario.model.TipoUsuario;
-import com.Acme.GestaoDeInventario.model.Usuario;
+import com.Acme.GestaoDeInventario.dto.UsuarioDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
@@ -17,7 +16,7 @@ public class UsuarioStep {
     private final SharedSteps sharedSteps;
     private ResponseEntity<String> response;
 
-    private Usuario usuario;
+    private UsuarioDTO usuario;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -31,12 +30,12 @@ public class UsuarioStep {
         List<Map<String, String>> data = table.asMaps();
         Map<String, String> row = data.getFirst(); // Pega a primeira linha da tabela
 
-        usuario = new Usuario();
+        usuario = new UsuarioDTO();
         usuario.setNome(row.get("nome"));
         usuario.setEmail(row.get("email"));
         usuario.setEndereco(row.get("endereco"));
         usuario.setTelefone(row.get("telefone"));
-        usuario.setTipoUsuario(TipoUsuario.CLIENTE);
+        usuario.setTipoUsuario("CLIENTE");
     }
 
     @When("eu envio uma requisição POST com o usuário para {string}")
@@ -44,7 +43,7 @@ public class UsuarioStep {
         sharedSteps.enviarRequisicaoPost(endpoint, usuario);
         response = sharedSteps.getResponse();
 
-        usuario = objectMapper.readValue(response.getBody(), Usuario.class);
+        usuario = objectMapper.readValue(response.getBody(), UsuarioDTO.class);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             System.out.println("Usuário cadastrado com sucesso!");

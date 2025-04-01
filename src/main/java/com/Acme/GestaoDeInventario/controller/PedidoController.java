@@ -1,5 +1,7 @@
 package com.Acme.GestaoDeInventario.controller;
 
+import com.Acme.GestaoDeInventario.dto.PedidoDTO;
+import com.Acme.GestaoDeInventario.mapper.PedidoMapper;
 import com.Acme.GestaoDeInventario.model.Pedido;
 import com.Acme.GestaoDeInventario.model.StatusPedido;
 import com.Acme.GestaoDeInventario.service.PedidoService;
@@ -20,28 +22,45 @@ public class PedidoController {
     }
 
     @PostMapping
-    public ResponseEntity<Pedido> criarPedido(@Valid @RequestBody Pedido pedido) {
+    public ResponseEntity<PedidoDTO> criarPedido(@Valid @RequestBody PedidoDTO pedidoDTO) {
+        Pedido pedido = PedidoMapper.INSTANCE.pedidoDTOToPedido(pedidoDTO);
+
         Pedido pedidoCriado = pedidoService.criarPedido(pedido);
+
+        PedidoDTO pedidoCriadoDTO = PedidoMapper.INSTANCE.pedidoToPedidoDTO(pedidoCriado);
+
         return ResponseEntity
-                .created(URI.create("/pedidos/" + pedidoCriado.getId()))
-                .body(pedidoCriado);
+                .created(URI.create("/pedidos/" + pedidoCriadoDTO.getId()))
+                .body(pedidoCriadoDTO);
     }
 
     @GetMapping("/obter/{id}")
-    public ResponseEntity<Pedido> buscarPedidoPorId(@PathVariable Long id) {
+    public ResponseEntity<PedidoDTO> buscarPedidoPorId(@PathVariable Long id) {
         Pedido pedido = pedidoService.buscarPedidoPorId(id);
+
+        PedidoDTO pedidoDTO = PedidoMapper.INSTANCE.pedidoToPedidoDTO(pedido);
+
         if (pedido != null) {
-            return ResponseEntity.ok(pedido);
+            return ResponseEntity.ok(pedidoDTO);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
 
     @GetMapping("/obterporcliente/{idUsuario}")
-    public ResponseEntity<List<Pedido>> buscarPedidosPorCliente(@PathVariable Long idUsuario) {
+    public ResponseEntity<List<PedidoDTO>> buscarPedidosPorCliente(@PathVariable Long idUsuario) {
         List<Pedido> pedido = pedidoService.listarPedidosPorCliente(idUsuario);
+
+        if (pedido.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        List<PedidoDTO> pedidosDTO = pedido.stream()
+                .map(PedidoMapper.INSTANCE::pedidoToPedidoDTO)
+                .toList();
+
         if (pedido != null) {
-            return ResponseEntity.ok(pedido);
+            return ResponseEntity.ok(pedidosDTO);
         } else {
             return ResponseEntity.notFound().build();
         }
@@ -56,7 +75,10 @@ public class PedidoController {
             if (pedido != null) {
                 pedido.setStatus(novoStatus);
                 pedidoService.salvarPedido(pedido);
-                return ResponseEntity.ok(pedido);
+
+                PedidoDTO pedidoDTO = PedidoMapper.INSTANCE.pedidoToPedidoDTO(pedido);
+
+                return ResponseEntity.ok(pedidoDTO);
             } else {
                 return ResponseEntity.notFound().build();
             }

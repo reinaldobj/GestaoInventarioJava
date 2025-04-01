@@ -1,6 +1,6 @@
 package com.Acme.GestaoDeInventario.controller;
 
-import com.Acme.GestaoDeInventario.model.Produto;
+import com.Acme.GestaoDeInventario.dto.ProdutoDTO;
 import com.Acme.GestaoDeInventario.utils.TestHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,8 +40,8 @@ public class ProdutoControllerTest {
     @BeforeEach
     void setup() throws Exception {
         testHelper = new TestHelper(mockMvc, objectMapper);
-        produtoJsonValido = testHelper.gerarJson(new Produto(PRODUTO_NOME, PRODUTO_DESCRICAO, 100.0, 10));
-        produtoJsonSemNome = testHelper.gerarJson(new Produto(null, PRODUTO_DESCRICAO, 100.0, 10));
+        produtoJsonValido = testHelper.gerarJson(new ProdutoDTO(PRODUTO_NOME, PRODUTO_DESCRICAO, 100.0, 10));
+        produtoJsonSemNome = testHelper.gerarJson(new ProdutoDTO(null, PRODUTO_DESCRICAO, 100.0, 10));
     }
 
     @Test
