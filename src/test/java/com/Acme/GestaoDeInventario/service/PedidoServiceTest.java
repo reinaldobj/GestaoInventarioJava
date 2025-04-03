@@ -28,6 +28,9 @@ public class PedidoServiceTest {
     @Mock
     private UsuarioService usuarioService;
 
+    @Mock
+    private ClienteService clienteService;
+
     private static Produto criarMockProduto(long id, int quantidade, double preco, String nome, String descricao) {
         Produto produto = new Produto();
         produto.setId(id);
@@ -39,14 +42,23 @@ public class PedidoServiceTest {
         return produto;
     }
 
-    private static Usuario criarMockUsuario(long id, String nome, String email, String endereco, String telefone) {
-        Usuario cliente = new Usuario();
+    private static Usuario criarMockUsuario(long id, String nome, String email, String senha) {
+        Usuario usuario = new Usuario();
+        usuario.setId(id);
+        usuario.setNome(nome);
+        usuario.setEmail(email);
+        usuario.setSenha(senha);
+
+        return usuario;
+    }
+
+    private static Cliente criarMockCliente(long id, String endereco, String telefone, int numero) {
+        Cliente cliente = new Cliente();
         cliente.setId(id);
-        cliente.setNome(nome);
-        cliente.setEmail(email);
+        cliente.setNumero(numero);
         cliente.setEndereco(endereco);
         cliente.setTelefone(telefone);
-        cliente.setTipoUsuario(TipoUsuario.CLIENTE);
+
         return cliente;
     }
 
@@ -83,7 +95,7 @@ public class PedidoServiceTest {
         List<PedidoProduto> itens = List.of(itemPedido, itemPedido2);
 
         Pedido pedido = new Pedido();
-        Usuario cliente = new Usuario();
+        Cliente cliente = new Cliente();
         cliente.setId(1L);
 
         int quantidadeProduto1 = produto.getQuantidade();
@@ -94,7 +106,7 @@ public class PedidoServiceTest {
 
         when(pedidoRepository.save(any(Pedido.class))).thenReturn(pedido);
 
-        Pedido resultado = pedidoService.criarPedido(pedido);
+        Pedido resultado = pedidoService.criar(pedido);
         assertNotNull(resultado);
         assertEquals(StatusPedido.PENDENTE, resultado.getStatus());
         assertTrue(resultado.getValorTotal() > 0);
@@ -111,14 +123,14 @@ public class PedidoServiceTest {
     @Test
     public void deveLancarExceptionAoTentarCadasrtarPedidoSemItens() {
         Pedido pedido = new Pedido();
-        Usuario cliente = new Usuario();
+        Cliente cliente = new Cliente();
         cliente.setId(1L);
 
         pedido.setCliente(cliente);
 
         when(pedidoRepository.save(any(Pedido.class))).thenReturn(pedido);
 
-        Exception exception = assertThrows(RuntimeException.class, () -> pedidoService.criarPedido(pedido));
+        Exception exception = assertThrows(RuntimeException.class, () -> pedidoService.criar(pedido));
 
         assertEquals("O pedido deve ter itens", exception.getMessage());
     }
@@ -127,11 +139,15 @@ public class PedidoServiceTest {
     public void deveLancarExceptionAoTentarCadasrtarPedidoComProdutoInexistente() {
         Produto produto = criarMockProduto(1, 50, 100.0, "Cadeira", "Cadeira gamer");
         Produto produto2 = criarMockProduto(2, 100, 500.0, "Mesa", "Mesa de escritório");
-        Usuario cliente = criarMockUsuario(1L, "João Silva", "teste@gmail.com", "Rua Teste, 123", "1234-5678");
+        Usuario usuario = criarMockUsuario(1L, "João Silva", "teste@gmail.com", "Teste@2025");
+        Cliente cliente = criarMockCliente(1L, "Rua Teste", "1234-5678", 123);
+
+        when(produtoService.buscarProdutoPorId(1L)).thenReturn(produto);
 
         when(produtoService.buscarProdutoPorId(1L)).thenReturn(null);
         when(produtoService.buscarProdutoPorId(2L)).thenReturn(produto2);
-        when(usuarioService.buscarUsuarioPorId(1L)).thenReturn(cliente);
+        when(usuarioService.buscarUsuarioPorId(1L)).thenReturn(usuario);
+        when(clienteService.buscarPorId(1L)).thenReturn(cliente);
 
         PedidoProduto itemPedido = new PedidoProduto();
         itemPedido.setProduto(produto);
@@ -144,7 +160,7 @@ public class PedidoServiceTest {
         List<PedidoProduto> itens = List.of(itemPedido, itemPedido2);
 
         Pedido pedido = new Pedido();
-        Usuario clientePedido = new Usuario();
+        Cliente clientePedido = new Cliente();
         clientePedido.setId(1L);
 
         pedido.setCliente(clientePedido);
@@ -152,7 +168,7 @@ public class PedidoServiceTest {
 
         when(pedidoRepository.save(any(Pedido.class))).thenReturn(pedido);
 
-        Exception exception = assertThrows(RuntimeException.class, () -> pedidoService.criarPedido(pedido));
+        Exception exception = assertThrows(RuntimeException.class, () -> pedidoService.criar(pedido));
 
         assertEquals("Produto não encontrado", exception.getMessage());
     }
@@ -185,7 +201,7 @@ public class PedidoServiceTest {
         List<PedidoProduto> itens = List.of(itemPedido, itemPedido2);
 
         Pedido pedido = new Pedido();
-        Usuario cliente = new Usuario();
+        Cliente cliente = new Cliente();
         cliente.setId(1L);
 
         pedido.setCliente(cliente);
@@ -193,7 +209,7 @@ public class PedidoServiceTest {
 
         when(pedidoRepository.save(any(Pedido.class))).thenReturn(pedido);
 
-        Exception exception = assertThrows(RuntimeException.class, () -> pedidoService.criarPedido(pedido));
+        Exception exception = assertThrows(RuntimeException.class, () -> pedidoService.criar(pedido));
 
         assertEquals("Quantidade do produto não disponível", exception.getMessage());
     }
@@ -225,7 +241,7 @@ public class PedidoServiceTest {
 
         List<PedidoProduto> itens = List.of(itemPedido, itemPedido2);
 
-        Usuario cliente = new Usuario();
+        Cliente cliente = new Cliente();
         cliente.setId(1L);
 
         Pedido pedido = new Pedido();
@@ -235,7 +251,7 @@ public class PedidoServiceTest {
         when(pedidoRepository.save(any(Pedido.class))).thenReturn(pedido);
         when(pedidoRepository.findById(1L)).thenReturn(Optional.of(pedido));
 
-        Pedido resultado = pedidoService.buscarPedidoPorId(1L);
+        Pedido resultado = pedidoService.buscarPorId(1L);
 
         assertNotNull(resultado);
         assertEquals(cliente.getId(), resultado.getCliente().getId());
@@ -246,7 +262,7 @@ public class PedidoServiceTest {
     public void deveRetornarExcecaoAoBuscarPedidoInexistente() {
         when(pedidoRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RuntimeException.class, () -> pedidoService.buscarPedidoPorId(1L));
+        Exception exception = assertThrows(RuntimeException.class, () -> pedidoService.buscarPorId(1L));
 
         assertEquals("Pedido não encontrado", exception.getMessage());
     }

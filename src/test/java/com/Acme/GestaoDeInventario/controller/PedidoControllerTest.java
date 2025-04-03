@@ -44,9 +44,10 @@ public class PedidoControllerTest {
         PedidoProdutoDTO itemPedido2 = testHelper.criarPedidoProduto(produto2.getId(), 1);
 
         UsuarioDTO usuario = testHelper.criarUsuario("Usuario Teste", "teste@teste.com");
+        ClienteDTO cliente = testHelper.criarCliente(usuario);
 
         PedidoDTO pedido = new PedidoDTO();
-        pedido.setCliente(usuario);
+        pedido.setCliente(cliente);
         pedido.setItens(List.of(itemPedido1, itemPedido2));
 
         int estoqueEsperadoProduto1 = produto1.getQuantidade() - itemPedido1.getQuantidade();
@@ -69,11 +70,12 @@ public class PedidoControllerTest {
     @Test
     void deveRetornarExceptionAoCadastrarPedidoComItemQueNaoExiste() throws Exception {
         UsuarioDTO usuario = testHelper.criarUsuario("Cliente Teste", "cliente@teste.com");
+        ClienteDTO cliente = testHelper.criarCliente(usuario);
 
         PedidoProdutoDTO itemPedidoInvalido = testHelper.criarPedidoProduto(9999L, 2);
 
         PedidoDTO pedido = new PedidoDTO();
-        pedido.setCliente(usuario);
+        pedido.setCliente(cliente);
         pedido.setItens(List.of(itemPedidoInvalido));
 
         mockMvc.perform(post(URL_PEDIDOS)
@@ -86,9 +88,10 @@ public class PedidoControllerTest {
     @Test
     void deveRetornarExceptionAoCadastrarPedidoSemItens() throws Exception {
         UsuarioDTO usuario = testHelper.criarUsuario("Cliente Teste", "cliente@teste.com");
+        ClienteDTO cliente = testHelper.criarCliente(usuario);
 
         PedidoDTO pedido = new PedidoDTO();
-        pedido.setCliente(usuario);
+        pedido.setCliente(cliente);
 
         mockMvc.perform(post(URL_PEDIDOS)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -108,8 +111,12 @@ public class PedidoControllerTest {
         UsuarioDTO usuario = new UsuarioDTO();
         usuario.setId(9999L);
 
+        ClienteDTO cliente = new ClienteDTO();
+        cliente.setId(9999L);
+        cliente.setUsuario(usuario);
+
         PedidoDTO pedido = new PedidoDTO();
-        pedido.setCliente(usuario);
+        pedido.setCliente(cliente);
         pedido.setItens(List.of(itemPedido1, itemPedido2));
 
         mockMvc.perform(post(URL_PEDIDOS)

@@ -13,12 +13,10 @@ import javax.validation.constraints.Size;
 @Table(name = "usuarios")
 public class Usuario {
 
-    public Usuario(String nome, String email, String endereco, String telefone, TipoUsuario tipoUsuario) {
+    public Usuario(String nome, String email, String senha) {
         this.nome = nome;
         this.email = email;
-        this.endereco = endereco;
-        this.telefone = telefone;
-        this.tipoUsuario = tipoUsuario;
+        this.senha = senha;
     }
 
     @Id
@@ -34,13 +32,5 @@ public class Usuario {
     @Size(max = 100, message = "O email deve ter no máximo 100 caracteres")
     private String email;
 
-    @NotBlank(message = "O endereço é obrigatório")
-    @Size(max = 200, message = "O endereço deve ter no máximo 200 caracteres")
-    private String endereco;
-
-    @NotBlank(message = "O telefone é obrigatório")
-    private String telefone;
-
-    @Enumerated(EnumType.STRING)
-    private TipoUsuario tipoUsuario;
+    private String senha;
 }

@@ -9,15 +9,11 @@ public class UsuarioDTO {
     private Long id;
     private String nome;
     private String email;
-    private String endereco;
-    private String telefone;
-    private String tipoUsuario;
+    private String senha;
 
-    public UsuarioDTO(String nome, String email, String endereco, String telefone, String tipoUsuario) {
+    public UsuarioDTO(String nome, String email, String senha) {
         this.nome = nome;
         this.email = email;
-        this.endereco = endereco;
-        this.telefone = telefone;
-        this.tipoUsuario = tipoUsuario;
+        this.senha = senha;
     }
 }

@@ -25,7 +25,7 @@ public class PedidoController {
     public ResponseEntity<PedidoDTO> criarPedido(@Valid @RequestBody PedidoDTO pedidoDTO) {
         Pedido pedido = PedidoMapper.INSTANCE.pedidoDTOToPedido(pedidoDTO);
 
-        Pedido pedidoCriado = pedidoService.criarPedido(pedido);
+        Pedido pedidoCriado = pedidoService.criar(pedido);
 
         PedidoDTO pedidoCriadoDTO = PedidoMapper.INSTANCE.pedidoToPedidoDTO(pedidoCriado);
 
@@ -36,7 +36,7 @@ public class PedidoController {
 
     @GetMapping("/obter/{id}")
     public ResponseEntity<PedidoDTO> buscarPedidoPorId(@PathVariable Long id) {
-        Pedido pedido = pedidoService.buscarPedidoPorId(id);
+        Pedido pedido = pedidoService.buscarPorId(id);
 
         PedidoDTO pedidoDTO = PedidoMapper.INSTANCE.pedidoToPedidoDTO(pedido);
 
@@ -48,8 +48,8 @@ public class PedidoController {
     }
 
     @GetMapping("/obterporcliente/{idUsuario}")
-    public ResponseEntity<List<PedidoDTO>> buscarPedidosPorCliente(@PathVariable Long idUsuario) {
-        List<Pedido> pedido = pedidoService.listarPedidosPorCliente(idUsuario);
+    public ResponseEntity<List<PedidoDTO>> buscarPedidosPorCliente(@PathVariable Long idCliente) {
+        List<Pedido> pedido = pedidoService.listarPorCliente(idCliente);
 
         if (pedido.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -59,7 +59,7 @@ public class PedidoController {
                 .map(PedidoMapper.INSTANCE::pedidoToPedidoDTO)
                 .toList();
 
-        if (pedido != null) {
+        if (!pedido.isEmpty()) {
             return ResponseEntity.ok(pedidosDTO);
         } else {
             return ResponseEntity.notFound().build();
@@ -70,11 +70,11 @@ public class PedidoController {
     public ResponseEntity<?> atualizarStatusPedido(@PathVariable Long id, @RequestBody String statusPedido) {
         try {
             StatusPedido novoStatus = StatusPedido.valueOf(statusPedido.toUpperCase());
-            Pedido pedido = pedidoService.buscarPedidoPorId(id);
+            Pedido pedido = pedidoService.buscarPorId(id);
 
             if (pedido != null) {
                 pedido.setStatus(novoStatus);
-                pedidoService.salvarPedido(pedido);
+                pedidoService.salvar(pedido);
 
                 PedidoDTO pedidoDTO = PedidoMapper.INSTANCE.pedidoToPedidoDTO(pedido);
 
@@ -89,9 +89,9 @@ public class PedidoController {
 
     @PutMapping("/cancelar/{id}")
     public ResponseEntity<Pedido> cancelarPedido(@PathVariable Long id) {
-        Pedido pedido = pedidoService.buscarPedidoPorId(id);
+        Pedido pedido = pedidoService.buscarPorId(id);
         if (pedido != null) {
-            pedidoService.cancelarPedido(id);
+            pedidoService.cancelar(id);
             return ResponseEntity.ok(pedido);
         } else {
             return ResponseEntity.notFound().build();

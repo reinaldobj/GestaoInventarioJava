@@ -26,12 +26,34 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
+    @ExceptionHandler(ClienteNaoEncontradoException.class)
+    public ResponseEntity<ErrorResponse> handleClienteNaoEncontradoException(ClienteNaoEncontradoException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),  // Timestamp do erro
+                ex.getMessage(),  // Mensagem da exceção
+                HttpStatus.NOT_FOUND.value()  // Código de status HTTP
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(ClienteInvalidoException.class)
+    public ResponseEntity<ErrorResponse> handleClienteInvalidoException(ClienteInvalidoException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),  // Timestamp do erro
+                ex.getMessage(),  // Mensagem da exceção
+                HttpStatus.BAD_REQUEST.value()  // Código de status HTTP
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
     @ExceptionHandler(PedidoInvalidoException.class)
     public ResponseEntity<ErrorResponse> handlePedidoInvalidoException(PedidoInvalidoException ex) {
         ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),  // Timestamp do erro
                 ex.getMessage(),  // Mensagem da exceção
-                HttpStatus.NOT_FOUND.value()  // Código de status HTTP
+                HttpStatus.BAD_REQUEST.value()  // Código de status HTTP
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }

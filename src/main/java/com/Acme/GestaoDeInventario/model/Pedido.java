@@ -11,13 +11,6 @@ import java.util.List;
 @Table(name = "pedidos")
 @NoArgsConstructor
 public class Pedido {
-
-    public Pedido(Usuario cliente, List<PedidoProduto> itens, StatusPedido status) {
-        this.cliente = cliente;
-        this.itens = itens;
-        this.status = status;
-    }
-
     @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,8 +18,8 @@ public class Pedido {
 
     @Setter
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
-    private Usuario cliente;
+    @JoinColumn(name = "cliente_id")
+    private Cliente cliente;
 
     @Setter
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -40,6 +33,12 @@ public class Pedido {
 
     @Column(nullable = false)
     private double valorTotal;
+
+    public Pedido(Cliente cliente, List<PedidoProduto> itens, StatusPedido status) {
+        this.cliente = cliente;
+        this.itens = itens;
+        this.status = status;
+    }
 
     public void calcularValorTotal() {
         this.valorTotal = itens.stream()

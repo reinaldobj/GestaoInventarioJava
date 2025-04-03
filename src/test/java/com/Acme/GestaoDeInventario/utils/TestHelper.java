@@ -1,5 +1,6 @@
 package com.Acme.GestaoDeInventario.utils;
 
+import com.Acme.GestaoDeInventario.dto.ClienteDTO;
 import com.Acme.GestaoDeInventario.dto.PedidoProdutoDTO;
 import com.Acme.GestaoDeInventario.dto.ProdutoDTO;
 import com.Acme.GestaoDeInventario.dto.UsuarioDTO;
@@ -32,13 +33,27 @@ public class TestHelper {
         return objectMapper.readValue(resultado.getResponse().getContentAsString(), ProdutoDTO.class);
     }
 
+    public ClienteDTO criarCliente(UsuarioDTO usuario) throws Exception {
+        ClienteDTO cliente = new ClienteDTO();
+        cliente.setEndereco("Endereço Teste");
+        cliente.setTelefone("1234-5678");
+        cliente.setNumero(123);
+        cliente.setUsuario(usuario);
+
+        MvcResult resultado = mockMvc.perform(post("/clientes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(cliente)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        return objectMapper.readValue(resultado.getResponse().getContentAsString(), ClienteDTO.class);
+    }
+
     public UsuarioDTO criarUsuario(String nome, String email) throws Exception {
         UsuarioDTO usuario = new UsuarioDTO();
         usuario.setNome(nome);
         usuario.setEmail(email);
-        usuario.setEndereco("Endereço Teste");
-        usuario.setTelefone("1234-5678");
-        usuario.setTipoUsuario("CLIENTE");
+        usuario.setSenha("Teste@2025");
 
         MvcResult resultado = mockMvc.perform(post("/usuarios")
                         .contentType(MediaType.APPLICATION_JSON)

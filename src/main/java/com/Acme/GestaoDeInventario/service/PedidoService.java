@@ -28,7 +28,7 @@ public class PedidoService {
         this.usuarioService = usuarioService;
     }
 
-    public Pedido criarPedido(Pedido pedido) {
+    public Pedido criar(Pedido pedido) {
         List<PedidoProduto> itensAtualizados = new ArrayList<>();
 
         if (pedido.getCliente() == null) {
@@ -65,7 +65,7 @@ public class PedidoService {
         return pedidoRepository.save(pedido);
     }
 
-    public Pedido salvarPedido(Pedido pedido) {
+    public Pedido salvar(Pedido pedido) {
         return pedidoRepository.save(pedido);
     }
 
@@ -73,16 +73,16 @@ public class PedidoService {
         return pedidoRepository.findAll();
     }
 
-    public Pedido buscarPedidoPorId(Long id) {
+    public Pedido buscarPorId(Long id) {
         return pedidoRepository.findById(id)
                 .orElseThrow(() -> new PedidoNaoEncontradoException("Pedido não encontrado"));
     }
 
-    public List<Pedido> listarPedidosPorCliente(Long idUsuario) {
-        return pedidoRepository.findByClienteId(idUsuario);
+    public List<Pedido> listarPorCliente(Long idCliente) {
+        return pedidoRepository.findByClienteId(idCliente);
     }
 
-    public void cancelarPedido(Long id) {
+    public void cancelar(Long id) {
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new PedidoNaoEncontradoException("Pedido não encontrado"));
 

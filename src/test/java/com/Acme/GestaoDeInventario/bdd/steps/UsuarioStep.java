@@ -33,9 +33,7 @@ public class UsuarioStep {
         usuario = new UsuarioDTO();
         usuario.setNome(row.get("nome"));
         usuario.setEmail(row.get("email"));
-        usuario.setEndereco(row.get("endereco"));
-        usuario.setTelefone(row.get("telefone"));
-        usuario.setTipoUsuario("CLIENTE");
+        usuario.setSenha(row.get("senha"));
     }
 
     @When("eu envio uma requisição POST com o usuário para {string}")
@@ -100,8 +98,7 @@ public class UsuarioStep {
 
         usuario.setNome(row.get("nome"));
         usuario.setEmail(row.get("email"));
-        usuario.setEndereco(row.get("endereco"));
-        usuario.setTelefone(row.get("telefone"));
+        usuario.setSenha(row.get("senha"));
 
         sharedSteps.enviarRequisicaoPut(endpoint, usuario.getId(), usuario);
         response = sharedSteps.getResponse();

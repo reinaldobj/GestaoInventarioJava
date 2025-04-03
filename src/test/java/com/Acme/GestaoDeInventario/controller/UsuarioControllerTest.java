@@ -36,8 +36,8 @@ public class UsuarioControllerTest {
     @BeforeEach
     void setup() throws Exception {
         testHelper = new TestHelper(mockMvc, objectMapper);
-        usuarioJsonValido = testHelper.gerarJson(new UsuarioDTO(USUARIO_NOME, USUARIO_ENDERECO, USUARIO_EMAIL, USUARIO_TELEFONE, "CLIENTE"));
-        usuarioJsonSemNome = testHelper.gerarJson(new UsuarioDTO("", USUARIO_ENDERECO, USUARIO_EMAIL, USUARIO_TELEFONE, "CLIENTE"));
+        usuarioJsonValido = testHelper.gerarJson(new UsuarioDTO(USUARIO_NOME, USUARIO_EMAIL, "TESTE@2025"));
+        usuarioJsonSemNome = testHelper.gerarJson(new UsuarioDTO("", USUARIO_EMAIL, "TESTE@2025"));
     }
 
     @Test
@@ -61,7 +61,7 @@ public class UsuarioControllerTest {
 
     @Test
     void deveRetornarErroAoCriarUsuarioSemEmail() throws Exception {
-        var usuarioJsonInvalido = testHelper.gerarJson(new UsuarioDTO(USUARIO_NOME, "", USUARIO_ENDERECO, USUARIO_TELEFONE, "CLIENTE"));
+        var usuarioJsonInvalido = testHelper.gerarJson(new UsuarioDTO(USUARIO_NOME, "", "TESTE@2025"));
         mockMvc.perform(post(URL_BASE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(usuarioJsonInvalido))
@@ -69,25 +69,25 @@ public class UsuarioControllerTest {
                 .andExpect(jsonPath("$.message").value("O usuário deve ter um email."));
     }
 
-    @Test
-    void deveRetornarErroAoCriarUsuarioSemEndereco() throws Exception {
-        var usuarioJsonInvalido = testHelper.gerarJson(new UsuarioDTO(USUARIO_NOME, USUARIO_EMAIL, "", USUARIO_TELEFONE, "CLIENTE"));
-        mockMvc.perform(post(URL_BASE)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(usuarioJsonInvalido))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("O usuário deve ter um endereço."));
-    }
+//    @Test
+//    void deveRetornarErroAoCriarUsuarioSemEndereco() throws Exception {
+//        var usuarioJsonInvalido = testHelper.gerarJson(new UsuarioDTO(USUARIO_NOME, USUARIO_EMAIL, "", USUARIO_TELEFONE, "CLIENTE"));
+//        mockMvc.perform(post(URL_BASE)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(usuarioJsonInvalido))
+//                .andExpect(status().isBadRequest())
+//                .andExpect(jsonPath("$.message").value("O usuário deve ter um endereço."));
+//    }
 
-    @Test
-    void deveRetornarErroAoCriarUsuarioSemTelefone() throws Exception {
-        var usuarioJsonInvalido = testHelper.gerarJson(new UsuarioDTO(USUARIO_NOME, USUARIO_ENDERECO, USUARIO_EMAIL, "", "CLIENTE"));
-        mockMvc.perform(post(URL_BASE)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(usuarioJsonInvalido))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("O usuário deve ter um telefone."));
-    }
+//    @Test
+//    void deveRetornarErroAoCriarUsuarioSemTelefone() throws Exception {
+//        var usuarioJsonInvalido = testHelper.gerarJson(new UsuarioDTO(USUARIO_NOME, USUARIO_ENDERECO, USUARIO_EMAIL, "", "CLIENTE"));
+//        mockMvc.perform(post(URL_BASE)
+//                        .contentType(MediaType.APPLICATION_JSON)
+//                        .content(usuarioJsonInvalido))
+//                .andExpect(status().isBadRequest())
+//                .andExpect(jsonPath("$.message").value("O usuário deve ter um telefone."));
+//    }
 
     @Test
     void deveRetornarUmUsuarioPorIdComSucesso() throws Exception {

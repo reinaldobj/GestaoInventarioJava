@@ -36,7 +36,12 @@ public class PedidoStep {
         long idProduto2 = criarProduto("Mesa Gamer", "Mesa Gamer - Design Moderno", valorProduto2, 5);
 
         nomeCliente = "Cliente Teste";
-        long idCliente = criarUsuario(nomeCliente, "cliente@teste.com", "Rua Teste, 123", "123456789");
+        long idUsuario = criarUsuario(nomeCliente, "cliente@teste.com", "TESTE@2025");
+
+        UsuarioDTO usuario = new UsuarioDTO();
+        usuario.setId(idUsuario);
+
+        long idCliente = criarCliente(usuario, "Rua Teste, 123", "123456789", 123);
 
         ProdutoDTO produtoPedido1 = new ProdutoDTO();
         produtoPedido1.setId(idProduto1);
@@ -44,7 +49,7 @@ public class PedidoStep {
         ProdutoDTO produtoPedido2 = new ProdutoDTO();
         produtoPedido2.setId(idProduto2);
 
-        UsuarioDTO clientePedido = new UsuarioDTO();
+        ClienteDTO clientePedido = new ClienteDTO();
         clientePedido.setId(idCliente);
 
         PedidoProdutoDTO itemPedido1 = new PedidoProdutoDTO();
@@ -91,9 +96,13 @@ public class PedidoStep {
 
     @Given("que um cliente tenta criar um pedido sem selecionar produtos")
     public void clienteTentaCriarPedidoSemSelecionarProdutos() throws Exception {
-        long idCliente = criarUsuario("Cliente Teste", "cliente@teste.com", "Rua Teste, 123", "123456789");
+        long idUsuario = criarUsuario("Cliente Teste", "cliente@teste.com", "TESTE@2025");
+        UsuarioDTO usuario = new UsuarioDTO();
+        usuario.setId(idUsuario);
 
-        UsuarioDTO clientePedido = new UsuarioDTO();
+        long idCliente = criarCliente(usuario, "Rua Teste, 123", "123456789", 123);
+
+        ClienteDTO clientePedido = new ClienteDTO();
         clientePedido.setId(idCliente);
 
         pedido = new PedidoDTO();
@@ -161,9 +170,21 @@ public class PedidoStep {
         return -1;
     }
 
-    private long criarUsuario(String nome, String email, String endereco, String telefone) throws Exception {
-        UsuarioDTO usuario = new UsuarioDTO(nome, email, endereco, telefone, "CLIENTE");
+    private long criarUsuario(String nome, String email, String senha) throws Exception {
+        UsuarioDTO usuario = new UsuarioDTO(nome, email, senha);
         sharedSteps.enviarRequisicaoPost("/usuarios", usuario);
+        response = sharedSteps.getResponse();
+
+        if (response.getStatusCode() == HttpStatus.CREATED) {
+            return Integer.parseInt(JsonPath.read(response.getBody(), "$.id").toString());
+        }
+
+        return -1;
+    }
+
+    private long criarCliente(UsuarioDTO usuario, String endereco, String telefone, int numero) throws Exception {
+        ClienteDTO cliente = new ClienteDTO(usuario, endereco, telefone, numero);
+        sharedSteps.enviarRequisicaoPost("/clientes", usuario);
         response = sharedSteps.getResponse();
 
         if (response.getStatusCode() == HttpStatus.CREATED) {
