@@ -56,23 +56,19 @@ public class ClienteService {
         Cliente clienteDb = clienteRepository.findById(cliente.getId())
                 .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
 
-        if (clienteDb != null) {
-            if (cliente.getEndereco() != null)
-                clienteDb.setEndereco(cliente.getEndereco());
+        if (cliente.getEndereco() != null)
+            clienteDb.setEndereco(cliente.getEndereco());
 
-            if (cliente.getNumero() != 0)
-                clienteDb.setNumero(cliente.getNumero());
+        if (cliente.getNumero() != 0)
+            clienteDb.setNumero(cliente.getNumero());
 
-            if (cliente.getTelefone() != null)
-                clienteDb.setTelefone(cliente.getTelefone());
+        if (cliente.getTelefone() != null)
+            clienteDb.setTelefone(cliente.getTelefone());
 
-            if (cliente.getUsuario() != null)
-                clienteDb.setUsuario(cliente.getUsuario());
+        if (cliente.getUsuario() != null)
+            clienteDb.setUsuario(cliente.getUsuario());
 
-            return clienteRepository.save(cliente);
-        }
-
-        return clienteDb;
+        return clienteRepository.save(cliente);
     }
 
     //Buscar Cliente por ID
