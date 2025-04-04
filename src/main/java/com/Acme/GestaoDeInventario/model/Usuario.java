@@ -17,6 +17,7 @@ public class Usuario {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
+
     }
 
     @Id
@@ -33,4 +34,6 @@ public class Usuario {
     private String email;
 
     private String senha;
+
+    private TipoUsuario tipoUsuario;
 }

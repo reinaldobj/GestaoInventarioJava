@@ -1,11 +1,13 @@
 package com.Acme.GestaoDeInventario.controller;
 
 import com.Acme.GestaoDeInventario.dto.UsuarioDTO;
+import com.Acme.GestaoDeInventario.exception.UsuarioInvalidoException;
 import com.Acme.GestaoDeInventario.mapper.UsuarioMapper;
 import com.Acme.GestaoDeInventario.model.Usuario;
 import com.Acme.GestaoDeInventario.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -17,23 +19,33 @@ import java.util.List;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, PasswordEncoder passwordEncoder) {
         this.usuarioService = usuarioService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @PostMapping
     public ResponseEntity<UsuarioDTO> criarUsuario(@Valid @RequestBody UsuarioDTO usuarioDTO) {
-        Usuario usuario = UsuarioMapper.INSTANCE.usuarioDTOToUsuario(usuarioDTO);
+        System.out.println(">>>>>>>> Entrou no método criarUsuario");
+        if(usuarioDTO.getSenha() == null || usuarioDTO.getSenha().isBlank()) {
+            throw new UsuarioInvalidoException("A senha é obrigatória.");
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setNome(usuarioDTO.getNome());
+        usuario.setEmail(usuarioDTO.getEmail());
+        usuario.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
 
         Usuario usuarioCriado = usuarioService.salvarUsuario(usuario);
 
-        UsuarioDTO usuarioDTOCriado = UsuarioMapper.INSTANCE.usuarioToUsuarioDTO(usuarioCriado);
+        usuarioDTO.setId(usuario.getId());
 
         return ResponseEntity
-                .created(URI.create("/usuarios/" + usuarioDTOCriado.getId()))
-                .body(usuarioDTOCriado);
+                .created(URI.create("/usuarios/" + usuarioDTO.getId()))
+                .body(usuarioDTO);
     }
 
     @GetMapping("/{id}")
